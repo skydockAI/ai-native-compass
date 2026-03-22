@@ -2,7 +2,7 @@ services:
   web:
     build: .
     ports:
-      - "5060:5060"
+      - "5005:5005"
     environment:
       - DATABASE_URL=postgresql://anc:${DB_PASSWORD}@db:5432/anc
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}

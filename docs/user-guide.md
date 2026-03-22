@@ -29,7 +29,7 @@
    docker compose up -d
    ```
 
-5. Access the application at [http://localhost:5000](http://localhost:5000)
+5. Access the application at [http://localhost:5005](http://localhost:5005)
 
 ### Stopping the Application
 

@@ -648,7 +648,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
+      - "5005:5005"
     environment:
       - DATABASE_URL=postgresql://anc:${DB_PASSWORD}@db:5432/anc
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
@@ -684,8 +684,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "app:create_app()"]
+EXPOSE 5005
+CMD ["gunicorn", "--bind", "0.0.0.0:5005", "--workers", "2", "app:create_app()"]
 ```
 
 ### 9.3 Persistence

@@ -13,7 +13,7 @@ cp .env.sample .env
 docker compose up -d
 
 # 3. Open in browser
-open http://localhost:5000
+open http://localhost:5005
 ```
 
 ## Tech Stack

@@ -12,6 +12,6 @@ ENV PYTHONPATH=/app/src
 
 RUN chmod +x entrypoint.sh
 
-EXPOSE 5060
+EXPOSE 5005
 
 CMD ["./entrypoint.sh"]
