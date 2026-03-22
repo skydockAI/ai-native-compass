@@ -1,9 +1,10 @@
 import os
 
-from flask import Flask
+from flask import Flask, redirect, request, url_for
+from flask_login import current_user, logout_user
 
 from .config import config_by_name
-from .extensions import db, migrate, login_manager, csrf
+from .extensions import csrf, db, login_manager, migrate
 
 
 def create_app(config_name=None):
@@ -20,16 +21,45 @@ def create_app(config_name=None):
     login_manager.init_app(app)
     csrf.init_app(app)
 
-    # Placeholder user loader — will be replaced with real User model in DI-002
+    # Flask-Login configuration
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Please log in to access this page.'
+    login_manager.login_message_category = 'warning'
+
     @login_manager.user_loader
     def load_user(user_id):
-        return None
+        from .models.user import User
+        return db.session.get(User, int(user_id))
 
     # Register blueprints
+    from .auth.routes import auth_bp
+    app.register_blueprint(auth_bp)
+
     from .routes.dashboard import dashboard_bp
     app.register_blueprint(dashboard_bp)
 
     from .routes.health import health_bp
     app.register_blueprint(health_bp)
+
+    # Before-request: enforce active/archived check on every authenticated
+    # request so that deactivated users lose access immediately (REQ-007).
+    @app.before_request
+    def enforce_user_active():
+        if request.path.startswith('/static'):
+            return
+        if current_user.is_authenticated:
+            if not current_user.is_active or current_user.is_archived:
+                logout_user()
+                return redirect(url_for('auth.login'))
+
+    # Seed admin users defined in ADMIN_SEEDS on startup (REQ-008).
+    # Wrapped in try/except so that test environments or pre-migration starts
+    # do not raise an error when the users table does not yet exist.
+    try:
+        with app.app_context():
+            from .utils.seed import seed_admins
+            seed_admins()
+    except Exception:
+        pass
 
     return app

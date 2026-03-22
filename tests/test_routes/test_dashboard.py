@@ -1,15 +1,15 @@
 """Tests for dashboard route (TC-001-009)."""
 
 
-def test_dashboard_returns_200(client):
-    """TC-001-009: Dashboard route returns 200."""
-    response = client.get('/')
+def test_dashboard_returns_200(auth_client):
+    """TC-001-009: Dashboard route returns 200 for authenticated users."""
+    response = auth_client.get('/')
     assert response.status_code == 200
 
 
-def test_dashboard_renders_html(client):
+def test_dashboard_renders_html(auth_client):
     """TC-001-008: Base template renders with expected elements."""
-    response = client.get('/')
+    response = auth_client.get('/')
     html = response.data.decode('utf-8')
 
     # Bootstrap 5 CSS is loaded

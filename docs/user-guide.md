@@ -51,6 +51,39 @@ pip install -r requirements.txt
 pytest
 ```
 
+## Authentication
+
+### Signing In
+
+Open [http://localhost:5005](http://localhost:5005) in your browser. You will be redirected to the Sign In page.
+
+Enter your **email address** and **password**, then click **Sign In**.
+
+- On success you are redirected to the Dashboard.
+- On failure a generic error is shown — the message does not reveal whether the email or password was incorrect.
+
+### Signing Out
+
+Click the user icon in the top-right navbar area and select **Sign Out**, or navigate directly to [http://localhost:5005/logout](http://localhost:5005/logout).
+
+### Initial Admin Account
+
+The first admin user is created automatically on application startup from the `ADMIN_SEEDS` environment variable (see [Environment Variables](#environment-variables) below). No manual database setup is required.
+
+Seeded admin accounts:
+- Cannot be demoted to a lower role.
+- Cannot be archived or deleted.
+
+### Password Requirements
+
+Passwords must be **at least 8 characters** long.
+
+### Access Control
+
+All pages (except the login page) require authentication. If your session expires or your account is deactivated, you are redirected to the Sign In page immediately.
+
+---
+
 ## Navigation
 
 The application uses a sidebar navigation with the following sections:

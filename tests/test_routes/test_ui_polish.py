@@ -8,25 +8,24 @@ def test_custom_css_served(client):
     assert b'--anc-primary' in response.data
 
 
-def test_base_layout_links_custom_css(client):
+def test_base_layout_links_custom_css(auth_client):
     """TC-002-002: Base layout includes link to main.css."""
-    response = client.get('/')
+    response = auth_client.get('/')
     html = response.data.decode('utf-8')
     assert 'main.css' in html
 
 
-def test_navbar_contains_branding(client):
+def test_navbar_contains_branding(auth_client):
     """TC-002-003: Navbar renders brand name and user placeholder."""
-    response = client.get('/')
+    response = auth_client.get('/')
     html = response.data.decode('utf-8')
     assert 'AI Native Compass' in html
     assert 'main-navbar' in html
-    assert 'Guest' in html
 
 
-def test_sidebar_navigation_links_present(client):
+def test_sidebar_navigation_links_present(auth_client):
     """TC-002-004: Sidebar contains all required navigation links."""
-    response = client.get('/')
+    response = auth_client.get('/')
     html = response.data.decode('utf-8')
     assert 'Dashboard' in html
     assert 'Products' in html
@@ -37,9 +36,9 @@ def test_sidebar_navigation_links_present(client):
     assert 'Audit Log' in html
 
 
-def test_dashboard_stat_cards_rendered(client):
+def test_dashboard_stat_cards_rendered(auth_client):
     """TC-002-005: Dashboard renders four stat cards with correct labels."""
-    response = client.get('/')
+    response = auth_client.get('/')
     html = response.data.decode('utf-8')
     assert 'stat-card' in html
     assert 'Products' in html
@@ -48,9 +47,9 @@ def test_dashboard_stat_cards_rendered(client):
     assert 'Teams' in html
 
 
-def test_dashboard_returns_200(client):
+def test_dashboard_returns_200(auth_client):
     """TC-002-006: Dashboard page returns HTTP 200."""
-    response = client.get('/')
+    response = auth_client.get('/')
     assert response.status_code == 200
 
 
