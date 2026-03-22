@@ -1,0 +1,29 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5001:5000"
+    environment:
+      - DATABASE_URL=postgresql://anc:${DB_PASSWORD}@db:5432/anc
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - FLASK_ENV=production
+      - ADMIN_SEEDS=${ADMIN_SEEDS}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    volumes:
+      - ./.data/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=anc
+      - POSTGRES_USER=anc
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U anc"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped

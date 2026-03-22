@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Native Compass{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Dashboard</h1>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Products</h5>
+                <p class="card-text display-6">--</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Repositories</h5>
+                <p class="card-text display-6">--</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Templates</h5>
+                <p class="card-text display-6">--</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Teams</h5>
+                <p class="card-text display-6">--</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <p class="text-muted">Welcome to AI Native Compass. Use the sidebar to navigate.</p>
+</div>
+{% endblock %}
