@@ -1,0 +1,578 @@
+/* ==========================================================================
+   AI Native Compass — Design System
+   Light theme · Deep-blue primary
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design Tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* Primary palette */
+  --anc-primary:        #1565C0;
+  --anc-primary-dark:   #0D47A1;
+  --anc-primary-medium: #1976D2;
+  --anc-primary-light:  #E3F2FD;
+  --anc-primary-xlight: #F0F7FF;
+
+  /* Complementary accents */
+  --anc-teal:           #00897B;
+  --anc-teal-light:     #E0F2F1;
+  --anc-amber:          #F57C00;
+  --anc-amber-light:    #FFF3E0;
+  --anc-violet:         #6D28D9;
+  --anc-violet-light:   #EDE9FE;
+
+  /* Semantic colours */
+  --anc-success:        #16A34A;
+  --anc-success-light:  #F0FDF4;
+  --anc-danger:         #DC2626;
+  --anc-danger-light:   #FEF2F2;
+  --anc-warning:        #D97706;
+  --anc-warning-light:  #FFFBEB;
+  --anc-info:           var(--anc-primary);
+  --anc-info-light:     var(--anc-primary-light);
+
+  /* Neutrals */
+  --anc-text-primary:   #1E293B;
+  --anc-text-secondary: #475569;
+  --anc-text-muted:     #94A3B8;
+  --anc-bg-body:        #F1F5F9;
+  --anc-bg-surface:     #FFFFFF;
+  --anc-border:         #E2E8F0;
+  --anc-border-dark:    #CBD5E1;
+
+  /* Elevation */
+  --anc-shadow-xs: 0 1px 2px rgba(0,0,0,0.06);
+  --anc-shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --anc-shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --anc-shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+
+  /* Layout */
+  --anc-navbar-height: 62px;
+  --anc-sidebar-width: 240px;
+
+  /* Geometry */
+  --anc-radius-sm: 0.375rem;
+  --anc-radius:    0.5rem;
+  --anc-radius-lg: 0.75rem;
+  --anc-radius-xl: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
+html {
+  font-size: 16px;
+}
+
+body {
+  background-color: var(--anc-bg-body);
+  color: var(--anc-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --------------------------------------------------------------------------
+   3. Navbar
+   -------------------------------------------------------------------------- */
+#main-navbar {
+  background-color: var(--anc-primary) !important;
+  box-shadow: var(--anc-shadow-md);
+  min-height: var(--anc-navbar-height);
+  padding: 0 1.5rem;
+}
+
+#main-navbar .navbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: #FFFFFF !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#main-navbar .navbar-brand i {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+#main-navbar .navbar-toggler {
+  border-color: rgba(255,255,255,0.4);
+}
+
+#main-navbar .navbar-toggler-icon {
+  filter: invert(1);
+}
+
+#main-navbar .nav-link {
+  color: rgba(255,255,255,0.85) !important;
+  font-size: 0.875rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--anc-radius-sm);
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+#main-navbar .nav-link:hover {
+  color: #FFFFFF !important;
+  background-color: rgba(255,255,255,0.12);
+}
+
+#main-navbar .navbar-text {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.875rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. Sidebar
+   -------------------------------------------------------------------------- */
+.sidebar {
+  background-color: var(--anc-bg-surface);
+  min-height: calc(100vh - var(--anc-navbar-height));
+  width: var(--anc-sidebar-width);
+  border-right: 1px solid var(--anc-border);
+  padding: 0.75rem 0.75rem 1.5rem;
+  flex-shrink: 0;
+}
+
+.sidebar-section-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--anc-text-muted);
+  padding: 0.75rem 0.5rem 0.3rem;
+  display: block;
+}
+
+.sidebar .nav-link {
+  color: var(--anc-text-secondary);
+  border-radius: var(--anc-radius-sm);
+  padding: 0.5rem 0.625rem;
+  margin-bottom: 1px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  transition: background-color 0.12s ease, color 0.12s ease;
+  line-height: 1.4;
+}
+
+.sidebar .nav-link i {
+  font-size: 1rem;
+  width: 1.2rem;
+  text-align: center;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--anc-primary-light);
+  color: var(--anc-primary);
+}
+
+.sidebar .nav-link:hover i {
+  opacity: 1;
+}
+
+.sidebar .nav-link.active {
+  background-color: var(--anc-primary);
+  color: #FFFFFF;
+  box-shadow: var(--anc-shadow-xs);
+}
+
+.sidebar .nav-link.active i {
+  opacity: 1;
+}
+
+.sidebar hr {
+  border: none;
+  border-top: 1px solid var(--anc-border);
+  margin: 0.5rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   5. Main Content
+   -------------------------------------------------------------------------- */
+.main-content {
+  min-height: calc(100vh - var(--anc-navbar-height));
+  padding: 1.75rem 2rem 2rem;
+  background-color: var(--anc-bg-body);
+  flex: 1;
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. Page Header
+   -------------------------------------------------------------------------- */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--anc-border);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.page-header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--anc-text-primary);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* --------------------------------------------------------------------------
+   7. Stat Cards (Dashboard)
+   -------------------------------------------------------------------------- */
+.stat-card {
+  background-color: var(--anc-bg-surface);
+  border: 1px solid var(--anc-border);
+  border-radius: var(--anc-radius-lg);
+  box-shadow: var(--anc-shadow-sm);
+  padding: 1.25rem 1.375rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--anc-shadow-md);
+  color: inherit;
+  text-decoration: none;
+}
+
+.stat-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--anc-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.375rem;
+  flex-shrink: 0;
+}
+
+.stat-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-card-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--anc-text-primary);
+  letter-spacing: -0.03em;
+}
+
+.stat-card-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--anc-text-muted);
+  margin-top: 0.2rem;
+}
+
+/* Colour variants for stat-card-icon */
+.stat-icon-blue    { background-color: var(--anc-primary-light); color: var(--anc-primary); }
+.stat-icon-teal    { background-color: var(--anc-teal-light);    color: var(--anc-teal); }
+.stat-icon-amber   { background-color: var(--anc-amber-light);   color: var(--anc-amber); }
+.stat-icon-violet  { background-color: var(--anc-violet-light);  color: var(--anc-violet); }
+
+/* --------------------------------------------------------------------------
+   8. Generic Cards
+   -------------------------------------------------------------------------- */
+.card {
+  border: 1px solid var(--anc-border);
+  border-radius: var(--anc-radius-lg);
+  box-shadow: var(--anc-shadow-sm);
+  background-color: var(--anc-bg-surface);
+}
+
+.card-header {
+  background-color: transparent;
+  border-bottom: 1px solid var(--anc-border);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--anc-text-primary);
+  padding: 0.875rem 1.25rem;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.card-footer {
+  background-color: transparent;
+  border-top: 1px solid var(--anc-border);
+  padding: 0.75rem 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   9. Alerts / Flash Messages
+   -------------------------------------------------------------------------- */
+.alert {
+  border-radius: var(--anc-radius);
+  border: none;
+  border-left: 4px solid;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+}
+
+.alert i {
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+  font-size: 1rem;
+}
+
+.alert-success {
+  border-left-color: var(--anc-success);
+  background-color: var(--anc-success-light);
+  color: #14532D;
+}
+
+.alert-danger {
+  border-left-color: var(--anc-danger);
+  background-color: var(--anc-danger-light);
+  color: #7F1D1D;
+}
+
+.alert-warning {
+  border-left-color: var(--anc-warning);
+  background-color: var(--anc-warning-light);
+  color: #78350F;
+}
+
+.alert-info {
+  border-left-color: var(--anc-primary);
+  background-color: var(--anc-primary-light);
+  color: var(--anc-primary-dark);
+}
+
+.alert .btn-close {
+  margin-left: auto;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+/* --------------------------------------------------------------------------
+   10. Buttons
+   -------------------------------------------------------------------------- */
+.btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: var(--anc-radius-sm);
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--anc-primary);
+  border-color: var(--anc-primary);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--anc-primary-dark);
+  border-color: var(--anc-primary-dark);
+  box-shadow: 0 0 0 0.2rem rgba(21,101,192,0.25);
+  color: #FFFFFF;
+}
+
+.btn-outline-primary {
+  color: var(--anc-primary);
+  border-color: var(--anc-primary);
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--anc-primary);
+  border-color: var(--anc-primary);
+  color: #FFFFFF;
+  box-shadow: 0 0 0 0.2rem rgba(21,101,192,0.25);
+}
+
+/* --------------------------------------------------------------------------
+   11. Tables
+   -------------------------------------------------------------------------- */
+.table {
+  font-size: 0.875rem;
+  color: var(--anc-text-primary);
+}
+
+.table thead th {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--anc-text-secondary);
+  background-color: #F8FAFC;
+  border-bottom: 2px solid var(--anc-border);
+  padding: 0.75rem 1rem;
+  white-space: nowrap;
+}
+
+.table tbody td {
+  vertical-align: middle;
+  border-bottom: 1px solid var(--anc-border);
+  padding: 0.75rem 1rem;
+}
+
+.table-hover tbody tr:hover td {
+  background-color: var(--anc-primary-xlight);
+}
+
+/* --------------------------------------------------------------------------
+   12. Forms
+   -------------------------------------------------------------------------- */
+.form-label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--anc-text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.form-control,
+.form-select {
+  border-color: var(--anc-border);
+  border-radius: var(--anc-radius-sm);
+  font-size: 0.875rem;
+  color: var(--anc-text-primary);
+  background-color: #FFFFFF;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-control::placeholder {
+  color: var(--anc-text-muted);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--anc-primary);
+  box-shadow: 0 0 0 0.2rem rgba(21,101,192,0.15);
+  outline: none;
+}
+
+.form-text {
+  font-size: 0.78rem;
+  color: var(--anc-text-muted);
+}
+
+.invalid-feedback {
+  font-size: 0.78rem;
+}
+
+/* --------------------------------------------------------------------------
+   13. Badges
+   -------------------------------------------------------------------------- */
+.badge {
+  font-weight: 500;
+  font-size: 0.72rem;
+  border-radius: var(--anc-radius-sm);
+  padding: 0.3em 0.65em;
+  letter-spacing: 0.02em;
+}
+
+/* --------------------------------------------------------------------------
+   14. Modals
+   -------------------------------------------------------------------------- */
+.modal-content {
+  border: none;
+  border-radius: var(--anc-radius-xl);
+  box-shadow: var(--anc-shadow-lg);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--anc-border);
+  padding: 1.125rem 1.5rem;
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.modal-body {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9rem;
+  color: var(--anc-text-secondary);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--anc-border);
+  padding: 0.875rem 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   15. Pagination
+   -------------------------------------------------------------------------- */
+.pagination .page-link {
+  color: var(--anc-primary);
+  border-color: var(--anc-border);
+  font-size: 0.875rem;
+  border-radius: var(--anc-radius-sm) !important;
+  margin: 0 2px;
+}
+
+.pagination .page-link:hover {
+  background-color: var(--anc-primary-light);
+  border-color: var(--anc-primary-light);
+  color: var(--anc-primary);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--anc-primary);
+  border-color: var(--anc-primary);
+  color: #FFFFFF;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: var(--anc-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   16. Utilities
+   -------------------------------------------------------------------------- */
+.text-primary   { color: var(--anc-primary) !important; }
+.bg-primary     { background-color: var(--anc-primary) !important; }
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--anc-border);
+  margin: 1.5rem 0;
+}
+
+/* Subtle empty-state helper */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--anc-text-muted);
+}
+
+.empty-state i {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+  opacity: 0.4;
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+}

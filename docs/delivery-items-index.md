@@ -21,6 +21,7 @@ Source: [Requirements Index](requirements-index.md) | [Architecture](architectur
 | [DI-009](delivery-items/DI-009.md) | Product Management & Repository Linking | DI-007 | REQ-023–REQ-026, REQ-053, REQ-054, REQ-049 (Product/Repo) |
 | [DI-010](delivery-items/DI-010.md) | Dashboard, Filtering & UI Polish | DI-003–DI-009 | REQ-055–REQ-058, REQ-067 |
 | [DI-011](delivery-items/DI-011.md) | Audit Logging | DI-002–DI-009 | REQ-048, REQ-059–REQ-062 |
+| [DI-012](delivery-items/DI-012.md) | UI Polish — Modern Light Theme | DI-001 | REQ-055, REQ-056, REQ-057, REQ-067 |
 
 ---
 
@@ -48,7 +49,7 @@ DI-001 (Foundation)
 
 ## Summary
 
-- **Total delivery items**: 11
+- **Total delivery items**: 12
 - **Total requirements covered**: 69 (all requirements mapped)
 - **Foundation items** (DI-001–DI-003): Infrastructure, authentication, and RBAC
 - **Core entity items** (DI-004–DI-009): All business entities and their relationships
