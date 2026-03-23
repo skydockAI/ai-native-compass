@@ -268,6 +268,16 @@ class TestProductDetail:
         assert b'Linked Repositories' in resp.data
         assert b'Link a repository' in resp.data
 
+    def test_edit_page_link_footer_visible_after_all_repos_linked(self, admin_client, product, repo, db):
+        """Footer must stay visible even when all repos are already linked (no dropdown but info message)."""
+        product_service.link_repository(product.id, repo.id)
+        resp = admin_client.get(f'/products/{product.id}/edit')
+        assert resp.status_code == 200
+        # Footer is always rendered — shows info message instead of form
+        assert b'already linked' in resp.data
+        # The link form's submit button must NOT be shown (no repos left to pick)
+        assert b'Link a repository' not in resp.data
+
     def test_detail_not_found_redirects(self, auth_client):
         resp = auth_client.get('/products/9999', follow_redirects=True)
         assert resp.status_code == 200

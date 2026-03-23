@@ -115,8 +115,8 @@
     </div>
     {% endif %}
 
-    {% if available_repos %}
     <div class="card-footer">
+        {% if available_repos %}
         <form method="POST" action="{{ url_for('products.link_repo', product_id=product.id) }}" class="d-flex gap-2 align-items-end">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <div class="flex-grow-1">
@@ -132,7 +132,11 @@
                 <i class="bi bi-link me-1"></i>Link
             </button>
         </form>
+        {% else %}
+        <p class="text-muted small mb-0">
+            <i class="bi bi-info-circle me-1"></i>All active repositories are already linked to this product.
+        </p>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
 {% endblock %}
