@@ -1,4 +1,4 @@
-"""Admin user seeding from the ADMIN_SEEDS environment variable (REQ-008)."""
+"""Seeding utilities: admin users (REQ-008) and default shared attributes (REQ-034)."""
 
 import logging
 import os
@@ -75,3 +75,41 @@ def seed_admins() -> None:
 
     except Exception as exc:
         logger.debug('Admin seeding skipped: %s', exc)
+
+
+# ---------------------------------------------------------------------------
+# Default shared attribute seeding (REQ-034)
+# ---------------------------------------------------------------------------
+
+_DEFAULT_SHARED_ATTRIBUTES = ['Name', 'Team', 'URL', 'Description']
+
+
+def seed_default_shared_attributes() -> None:
+    """Create the four default shared attributes if they do not yet exist (REQ-034).
+
+    Skips gracefully when the table does not exist (e.g. before migrations run).
+    """
+    try:
+        from sqlalchemy import inspect as sa_inspect
+
+        from ..extensions import db
+        from ..models.shared_attribute import SharedAttributeDefinition
+
+        inspector = sa_inspect(db.engine)
+        if 'shared_attribute_definitions' not in inspector.get_table_names():
+            logger.debug('shared_attribute_definitions table does not exist yet — skipping.')
+            return
+
+        for attr_name in _DEFAULT_SHARED_ATTRIBUTES:
+            existing = SharedAttributeDefinition.query.filter_by(name=attr_name).first()
+            if existing:
+                logger.debug('Default shared attribute already exists: %s', attr_name)
+                continue
+            attr = SharedAttributeDefinition(name=attr_name, is_default=True, is_active=True)
+            db.session.add(attr)
+            logger.info('Seeded default shared attribute: %s', attr_name)
+
+        db.session.commit()
+
+    except Exception as exc:
+        logger.debug('Default shared attribute seeding skipped: %s', exc)

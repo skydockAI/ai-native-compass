@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Shared Attributes - AI Native Compass{% endblock %}
+{% block nav_shared_attributes %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-tags me-2 text-primary"></i>Shared Attributes</h1>
+    <div class="d-flex gap-2 align-items-center">
+        {% if show_inactive %}
+            <a href="{{ url_for('shared_attributes.index') }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-eye me-1"></i>Show Active
+            </a>
+        {% else %}
+            <a href="{{ url_for('shared_attributes.index', inactive='1') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-eye-slash me-1"></i>Show Inactive
+            </a>
+        {% endif %}
+        <a href="{{ url_for('shared_attributes.create') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>New Attribute
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    {% if attributes %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attr in attributes %}
+                <tr{% if not attr.is_active %} class="text-muted"{% endif %}>
+                    <td class="fw-semibold">
+                        {{ attr.name }}
+                        {% if attr.is_default %}
+                        <i class="bi bi-lock-fill ms-1 text-secondary" title="Default attribute — protected"></i>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if attr.is_default %}
+                            <span class="badge bg-secondary">Default</span>
+                        {% else %}
+                            <span class="badge bg-info text-dark">Custom</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if attr.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if attr.is_default %}
+                            <span class="text-muted small"><i class="bi bi-shield-lock me-1"></i>Protected</span>
+                        {% else %}
+                        <div class="btn-group btn-group-sm">
+                            {% if attr.is_active %}
+                                <a href="{{ url_for('shared_attributes.edit', attr_id=attr.id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-secondary" title="Deactivate"
+                                        onclick="showConfirmModal('Deactivate Attribute', 'Are you sure you want to deactivate the attribute &quot;{{ attr.name }}&quot;?', '{{ url_for('shared_attributes.deactivate', attr_id=attr.id) }}')">
+                                    <i class="bi bi-toggle-off"></i>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-success" title="Reactivate"
+                                        onclick="showConfirmModal('Reactivate Attribute', 'Are you sure you want to reactivate the attribute &quot;{{ attr.name }}&quot;?', '{{ url_for('shared_attributes.reactivate', attr_id=attr.id) }}')">
+                                    <i class="bi bi-toggle-on"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body empty-state">
+        <i class="bi bi-tags"></i>
+        <p class="mb-0">
+            {% if show_inactive %}
+                No inactive shared attributes found.
+            {% else %}
+                No shared attributes found.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showConfirmModal(title, message, actionUrl) {
+    document.getElementById('confirmModalLabel').textContent = title;
+    document.getElementById('confirmModalBody').innerHTML = message;
+    document.getElementById('confirmModalForm').action = actionUrl;
+    var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

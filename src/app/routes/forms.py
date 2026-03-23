@@ -132,3 +132,17 @@ class ListOptionForm(FlaskForm):
     value = StringField('Option value', validators=[DataRequired(), Length(max=255)])
     display_order = IntegerField('Display order', default=0, validators=[Optional()])
     submit = SubmitField('Save Option')
+
+
+class SharedAttributeCreateForm(FlaskForm):
+    """Form for creating a new custom shared attribute (Admin only)."""
+
+    name = StringField('Attribute name', validators=[DataRequired(), Length(max=255)])
+    submit = SubmitField('Create Attribute')
+
+
+class SharedAttributeEditForm(FlaskForm):
+    """Form for renaming a custom shared attribute (Admin only)."""
+
+    name = StringField('Attribute name', validators=[DataRequired(), Length(max=255)])
+    submit = SubmitField('Save Changes')

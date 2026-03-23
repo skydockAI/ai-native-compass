@@ -50,6 +50,9 @@ def create_app(config_name=None):
     from .routes.templates import templates_bp
     app.register_blueprint(templates_bp)
 
+    from .routes.shared_attributes import shared_attributes_bp
+    app.register_blueprint(shared_attributes_bp)
+
     # Before-request: enforce active/archived check on every authenticated
     # request so that deactivated users lose access immediately (REQ-007).
     @app.before_request
@@ -66,8 +69,9 @@ def create_app(config_name=None):
     # do not raise an error when the users table does not yet exist.
     try:
         with app.app_context():
-            from .utils.seed import seed_admins
+            from .utils.seed import seed_admins, seed_default_shared_attributes
             seed_admins()
+            seed_default_shared_attributes()
     except Exception:
         pass
 
