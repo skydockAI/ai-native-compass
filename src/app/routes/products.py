@@ -18,15 +18,13 @@ products_bp = Blueprint('products', __name__, url_prefix='/products')
 @products_bp.route('/')
 @login_required
 def index():
-    """Product list with active/archived filter."""
+    """Product list with active/archived filter (REQ-058)."""
     show_archived = request.args.get('archived', '0') == '1'
-    products = product_service.get_products(include_archived=True) if show_archived \
-        else product_service.get_products()
-    return render_template(
-        'products/list.html',
-        products=products,
-        show_archived=show_archived,
-    )
+    products = product_service.get_products(include_archived=show_archived)
+    ctx = dict(products=products, show_archived=show_archived)
+    if request.headers.get('HX-Request'):
+        return render_template('products/partials/product_list.html', **ctx)
+    return render_template('products/list.html', **ctx)
 
 
 # ---------------------------------------------------------------------------

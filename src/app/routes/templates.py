@@ -19,18 +19,13 @@ templates_bp = Blueprint('templates', __name__, url_prefix='/templates')
 @templates_bp.route('/')
 @login_required
 def index():
-    """Template list with active/archived filter."""
+    """Template list with active/archived filter (REQ-058)."""
     show_archived = request.args.get('archived', '0') == '1'
-    templates = (
-        template_service.get_templates(include_archived=True)
-        if show_archived
-        else template_service.get_templates()
-    )
-    return render_template(
-        'templates/list.html',
-        templates=templates,
-        show_archived=show_archived,
-    )
+    templates = template_service.get_templates(include_archived=show_archived)
+    ctx = dict(templates=templates, show_archived=show_archived)
+    if request.headers.get('HX-Request'):
+        return render_template('templates/partials/template_list.html', **ctx)
+    return render_template('templates/list.html', **ctx)
 
 
 # --------------------------------------------------------------------------

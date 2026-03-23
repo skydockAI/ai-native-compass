@@ -18,15 +18,37 @@ repositories_bp = Blueprint('repositories', __name__, url_prefix='/repositories'
 @repositories_bp.route('/')
 @login_required
 def index():
-    """Repository list with active/archived filter."""
+    """Repository list with active/archived and entity filters (REQ-058)."""
     show_archived = request.args.get('archived', '0') == '1'
-    repos = repository_service.get_repositories(include_archived=True) if show_archived \
-        else repository_service.get_repositories()
-    return render_template(
-        'repositories/list.html',
+    product_id = request.args.get('product_id', type=int)
+    team_id = request.args.get('team_id', type=int)
+    template_id = request.args.get('template_id', type=int)
+
+    repos = repository_service.get_repositories(
+        include_archived=show_archived,
+        product_id=product_id,
+        team_id=team_id,
+        template_id=template_id,
+    )
+
+    all_products = product_service.get_products(include_archived=False)
+    all_teams = team_service.get_teams(include_archived=False)
+    all_templates = template_service.get_templates(include_archived=False)
+
+    ctx = dict(
         repos=repos,
         show_archived=show_archived,
+        all_products=all_products,
+        all_teams=all_teams,
+        all_templates=all_templates,
+        sel_product_id=product_id,
+        sel_team_id=team_id,
+        sel_template_id=template_id,
     )
+
+    if request.headers.get('HX-Request'):
+        return render_template('repositories/partials/repo_list.html', **ctx)
+    return render_template('repositories/list.html', **ctx)
 
 
 # ---------------------------------------------------------------------------

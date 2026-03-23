@@ -21,6 +21,8 @@
   --anc-amber-light:    #FFF3E0;
   --anc-violet:         #6D28D9;
   --anc-violet-light:   #EDE9FE;
+  --anc-rose:           #E11D48;
+  --anc-rose-light:     #FFF1F2;
 
   /* Semantic colours */
   --anc-success:        #16A34A;
@@ -288,6 +290,7 @@ body {
 .stat-icon-teal    { background-color: var(--anc-teal-light);    color: var(--anc-teal); }
 .stat-icon-amber   { background-color: var(--anc-amber-light);   color: var(--anc-amber); }
 .stat-icon-violet  { background-color: var(--anc-violet-light);  color: var(--anc-violet); }
+.stat-icon-rose    { background-color: var(--anc-rose-light);    color: var(--anc-rose); }
 
 /* --------------------------------------------------------------------------
    8. Generic Cards

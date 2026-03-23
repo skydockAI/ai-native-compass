@@ -1,0 +1,80 @@
+{% if users %}
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr{% if user.is_archived %} class="text-muted"{% endif %}>
+                <td>
+                    {{ user.full_name }}
+                    {% if user.is_seeded %}
+                        <span class="badge bg-info ms-1" title="Seeded admin">Seeded</span>
+                    {% endif %}
+                </td>
+                <td>{{ user.email }}</td>
+                <td>
+                    {% if user.role.value == 'admin' %}
+                        <span class="badge bg-danger">Admin</span>
+                    {% elif user.role.value == 'editor' %}
+                        <span class="badge bg-primary">Editor</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Viewer</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user.is_archived %}
+                        <span class="badge bg-warning text-dark">Archived</span>
+                    {% elif user.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        {% if not user.is_archived %}
+                            <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-outline-primary" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{{ url_for('users.reset_password', user_id=user.id) }}" class="btn btn-outline-secondary" title="Reset Password">
+                                <i class="bi bi-key"></i>
+                            </a>
+                            {% if not user.is_seeded %}
+                            <button type="button" class="btn btn-outline-danger" title="Archive"
+                                    onclick="showConfirmModal('Archive User', 'Are you sure you want to archive {{ user.full_name }}? They will no longer be able to log in.', '{{ url_for('users.archive', user_id=user.id) }}')">
+                                <i class="bi bi-archive"></i>
+                            </button>
+                            {% endif %}
+                        {% else %}
+                            <button type="button" class="btn btn-outline-success" title="Reactivate"
+                                    onclick="showConfirmModal('Reactivate User', 'Are you sure you want to reactivate {{ user.full_name }}?', '{{ url_for('users.reactivate', user_id=user.id) }}')">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card-body empty-state">
+    <i class="bi bi-person-x"></i>
+    <p class="mb-0">
+        {% if show_archived %}
+            No archived users found.
+        {% else %}
+            No users found matching the selected filters.
+        {% endif %}
+    </p>
+</div>
+{% endif %}
