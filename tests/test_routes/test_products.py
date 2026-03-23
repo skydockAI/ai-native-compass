@@ -186,7 +186,7 @@ class TestAdminArchiveProduct:
 
 
 # ---------------------------------------------------------------------------
-# TC-009-012 / TC-009-013: Linking and unlinking from product detail
+# TC-009-012 / TC-009-013: Linking and unlinking from product edit page
 # ---------------------------------------------------------------------------
 
 class TestProductLinking:
@@ -252,6 +252,21 @@ class TestProductDetail:
         resp = auth_client.get(f'/products/{product.id}')
         assert resp.status_code == 200
         assert b'Route Product Repo' in resp.data
+
+    def test_detail_has_no_link_unlink_controls(self, admin_client, product, repo, db):
+        """Detail page must be read-only — no link/unlink forms."""
+        product_service.link_repository(product.id, repo.id)
+        resp = admin_client.get(f'/products/{product.id}')
+        assert resp.status_code == 200
+        assert b'unlink-repo' not in resp.data
+        assert b'link-repo' not in resp.data
+
+    def test_edit_page_shows_link_management(self, admin_client, product, repo, db):
+        """Edit page must show the repo link management section."""
+        resp = admin_client.get(f'/products/{product.id}/edit')
+        assert resp.status_code == 200
+        assert b'Linked Repositories' in resp.data
+        assert b'Link a repository' in resp.data
 
     def test_detail_not_found_redirects(self, auth_client):
         resp = auth_client.get('/products/9999', follow_redirects=True)

@@ -42,15 +42,7 @@ def detail(product_id):
         flash('Product not found.', 'danger')
         return redirect(url_for('products.index'))
 
-    active_repos = repository_service.get_repositories(include_archived=False)
-    linked_repo_ids = {r.id for r in product.repositories}
-    available_repos = [r for r in active_repos if r.id not in linked_repo_ids]
-
-    return render_template(
-        'products/detail.html',
-        product=product,
-        available_repos=available_repos,
-    )
+    return render_template('products/detail.html', product=product)
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +104,11 @@ def edit(product_id):
         except ProductServiceError as exc:
             flash(str(exc), 'danger')
 
-    return render_template('products/edit.html', form=form, product=product)
+    active_repos = repository_service.get_repositories(include_archived=False)
+    linked_repo_ids = {r.id for r in product.repositories}
+    available_repos = [r for r in active_repos if r.id not in linked_repo_ids]
+
+    return render_template('products/edit.html', form=form, product=product, available_repos=available_repos)
 
 
 # ---------------------------------------------------------------------------
@@ -157,14 +153,14 @@ def link_repo(product_id):
     repo_id = request.form.get('repo_id', type=int)
     if not repo_id:
         flash('Please select a repository to link.', 'danger')
-        return redirect(url_for('products.detail', product_id=product_id))
+        return redirect(url_for('products.edit', product_id=product_id))
 
     try:
         product_service.link_repository(product_id, repo_id)
         flash('Repository linked successfully.', 'success')
     except ProductServiceError as exc:
         flash(str(exc), 'danger')
-    return redirect(url_for('products.detail', product_id=product_id))
+    return redirect(url_for('products.edit', product_id=product_id))
 
 
 @products_bp.route('/<int:product_id>/unlink-repo', methods=['POST'])
@@ -175,14 +171,14 @@ def unlink_repo(product_id):
     repo_id = request.form.get('repo_id', type=int)
     if not repo_id:
         flash('Repository not specified.', 'danger')
-        return redirect(url_for('products.detail', product_id=product_id))
+        return redirect(url_for('products.edit', product_id=product_id))
 
     try:
         product_service.unlink_repository(product_id, repo_id)
         flash('Repository unlinked successfully.', 'success')
     except ProductServiceError as exc:
         flash(str(exc), 'danger')
-    return redirect(url_for('products.detail', product_id=product_id))
+    return redirect(url_for('products.edit', product_id=product_id))
 
 
 # ---------------------------------------------------------------------------
