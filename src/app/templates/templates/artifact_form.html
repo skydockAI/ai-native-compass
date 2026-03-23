@@ -29,7 +29,11 @@
 
                     <div class="mb-3">
                         {{ form.type.label(class="form-label") }}
-                        {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else ""), id="artifactType", onchange="toggleValueType()", {% if is_edit %}disabled="disabled"{% endif %}) }}
+                        {% if is_edit %}
+                        {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else ""), id="artifactType", onchange="toggleValueType()", disabled=true) }}
+                        {% else %}
+                        {{ form.type(class="form-select" + (" is-invalid" if form.type.errors else ""), id="artifactType", onchange="toggleValueType()") }}
+                        {% endif %}
                         {% if is_edit %}
                         {# Hidden field to submit the value when select is disabled #}
                         <input type="hidden" name="type" value="{{ form.type.data }}">
@@ -59,7 +63,11 @@
 
                     <div id="valueTypeSection" class="mb-3" style="display:none">
                         {{ form.value_type.label(class="form-label") }}
-                        {{ form.value_type(class="form-select" + (" is-invalid" if form.value_type.errors else ""), {% if is_edit %}disabled="disabled"{% endif %}) }}
+                        {% if is_edit %}
+                        {{ form.value_type(class="form-select" + (" is-invalid" if form.value_type.errors else ""), disabled=true) }}
+                        {% else %}
+                        {{ form.value_type(class="form-select" + (" is-invalid" if form.value_type.errors else "")) }}
+                        {% endif %}
                         {% if is_edit %}
                         <input type="hidden" name="value_type" value="{{ form.value_type.data }}">
                         <div class="form-text text-muted">Value type cannot be changed after creation.</div>
