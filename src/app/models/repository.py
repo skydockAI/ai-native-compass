@@ -12,7 +12,12 @@ from . import BaseModel
 
 product_repository = db.Table(
     'product_repository',
-    db.Column('product_id', db.Integer, nullable=False),
+    db.Column(
+        'product_id',
+        db.Integer,
+        db.ForeignKey('products.id', ondelete='CASCADE'),
+        nullable=False,
+    ),
     db.Column(
         'repository_id',
         db.Integer,

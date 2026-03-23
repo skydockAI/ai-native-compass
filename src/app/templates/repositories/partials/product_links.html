@@ -1,0 +1,78 @@
+{#
+  Product links partial for repository edit page.
+  Requires context variables:
+    repo           — the Repository being edited
+    linked_products — list of Product objects currently linked to this repo
+    available_products — list of Product objects available to link
+#}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Linked Products</strong>
+        <span class="badge bg-secondary">{{ linked_products | length }}</span>
+    </div>
+
+    {% if linked_products %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Description</th>
+                    {% if current_user.role.value in ('admin', 'editor') %}
+                    <th class="text-end">Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in linked_products %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('products.detail', product_id=product.id) }}" class="text-decoration-none fw-semibold">
+                            {{ product.name }}
+                        </a>
+                    </td>
+                    <td class="text-truncate" style="max-width:260px;">{{ product.description or '—' }}</td>
+                    {% if current_user.role.value in ('admin', 'editor') %}
+                    <td class="text-end">
+                        <form method="POST" action="{{ url_for('products.unlink_from_repo') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <input type="hidden" name="repo_id" value="{{ repo.id }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Unlink product">
+                                <i class="bi bi-unlink"></i> Unlink
+                            </button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body py-3 text-muted small">
+        <i class="bi bi-info-circle me-1"></i>No products linked to this repository.
+    </div>
+    {% endif %}
+
+    {% if current_user.role.value in ('admin', 'editor') and available_products %}
+    <div class="card-footer">
+        <form method="POST" action="{{ url_for('products.link_to_repo') }}" class="d-flex gap-2 align-items-end">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="repo_id" value="{{ repo.id }}">
+            <div class="flex-grow-1">
+                <label for="product_id" class="form-label mb-1 small fw-semibold">Link a product</label>
+                <select name="product_id" id="product_id" class="form-select form-select-sm">
+                    <option value="">— select a product —</option>
+                    {% for product in available_products %}
+                    <option value="{{ product.id }}">{{ product.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-link me-1"></i>Link
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>

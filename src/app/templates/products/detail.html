@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - Products - AI Native Compass{% endblock %}
+{% block nav_products %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('products.index') }}">Products</a></li>
+                <li class="breadcrumb-item active">{{ product.name }}</li>
+            </ol>
+        </nav>
+        <h1>
+            <i class="bi bi-box-seam me-2 text-primary"></i>{{ product.name }}
+            {% if product.is_archived %}
+                <span class="badge bg-warning text-dark fs-6 align-middle">Archived</span>
+            {% endif %}
+        </h1>
+    </div>
+    {% if current_user.role.value in ('admin', 'editor') and not product.is_archived %}
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('products.edit', product_id=product.id) }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i>Edit
+        </a>
+        <button type="button" class="btn btn-outline-danger btn-sm"
+                onclick="showConfirmModal('Archive Product', 'Are you sure you want to archive &quot;{{ product.name }}&quot;?', '{{ url_for('products.archive', product_id=product.id) }}')">
+            <i class="bi bi-archive me-1"></i>Archive
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+{# Product details #}
+<div class="card mb-4">
+    <div class="card-header"><strong>Product Details</strong></div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Name</dt>
+            <dd class="col-sm-9">{{ product.name }}</dd>
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">{{ product.description or '—' }}</dd>
+        </dl>
+    </div>
+</div>
+
+{# Linked repositories #}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Linked Repositories</strong>
+        <span class="badge bg-secondary">{{ product.repositories | length }}</span>
+    </div>
+
+    {% if product.repositories %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>URL</th>
+                    <th>Team</th>
+                    <th>Status</th>
+                    {% if current_user.role.value in ('admin', 'editor') and not product.is_archived %}
+                    <th class="text-end">Actions</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for repo in product.repositories %}
+                <tr{% if repo.is_archived %} class="text-muted"{% endif %}>
+                    <td>
+                        <a href="{{ url_for('repositories.detail', repo_id=repo.id) }}" class="text-decoration-none fw-semibold">
+                            {{ repo.name }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ repo.url }}" target="_blank" rel="noopener noreferrer" class="text-truncate d-inline-block" style="max-width:220px;" title="{{ repo.url }}">
+                            {{ repo.url }}
+                        </a>
+                    </td>
+                    <td>{{ repo.team.name if repo.team else '—' }}</td>
+                    <td>
+                        {% if repo.is_archived %}
+                            <span class="badge bg-warning text-dark">Archived</span>
+                        {% else %}
+                            <span class="badge bg-success">Active</span>
+                        {% endif %}
+                    </td>
+                    {% if current_user.role.value in ('admin', 'editor') and not product.is_archived %}
+                    <td class="text-end">
+                        <form method="POST" action="{{ url_for('products.unlink_repo', product_id=product.id) }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="repo_id" value="{{ repo.id }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm" title="Unlink">
+                                <i class="bi bi-unlink"></i> Unlink
+                            </button>
+                        </form>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body empty-state">
+        <i class="bi bi-code-square"></i>
+        <p class="mb-0">No repositories linked to this product.</p>
+    </div>
+    {% endif %}
+
+    {% if current_user.role.value in ('admin', 'editor') and not product.is_archived and available_repos %}
+    <div class="card-footer">
+        <form method="POST" action="{{ url_for('products.link_repo', product_id=product.id) }}" class="d-flex gap-2 align-items-end">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="flex-grow-1">
+                <label for="repo_id" class="form-label mb-1 small fw-semibold">Link a repository</label>
+                <select name="repo_id" id="repo_id" class="form-select form-select-sm">
+                    <option value="">— select a repository —</option>
+                    {% for repo in available_repos %}
+                    <option value="{{ repo.id }}">{{ repo.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">
+                <i class="bi bi-link me-1"></i>Link
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<div class="d-flex gap-2">
+    <a href="{{ url_for('products.index') }}" class="btn btn-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back to Products
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showConfirmModal(title, message, actionUrl) {
+    document.getElementById('confirmModalLabel').textContent = title;
+    document.getElementById('confirmModalBody').innerHTML = message;
+    document.getElementById('confirmModalForm').action = actionUrl;
+    var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

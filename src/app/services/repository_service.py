@@ -277,12 +277,25 @@ def duplicate_repository(source_repo_id, name, url):
 # ---------------------------------------------------------------------------
 
 def archive_repository(repo_id):
-    """Soft-delete a repository (REQ-046)."""
+    """Soft-delete a repository (REQ-046, REQ-049).
+
+    Raises ``RepositoryServiceError`` if any linked active Product would block
+    the archive (REQ-049).
+    """
     repo = db.session.get(Repository, repo_id)
     if repo is None:
         raise RepositoryServiceError('Repository not found.')
     if repo.is_archived:
         raise RepositoryServiceError('Repository is already archived.')
+
+    blocking = [p for p in repo.products if not p.is_archived]
+    if blocking:
+        names = ', '.join(f'"{p.name}"' for p in blocking)
+        raise RepositoryServiceError(
+            f'Cannot archive this repository because it is linked to active '
+            f'{"product" if len(blocking) == 1 else "products"}: '
+            f'{names}. Please unlink or archive them first.'
+        )
 
     repo.is_archived = True
     repo.is_active = False
