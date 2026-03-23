@@ -134,6 +134,36 @@ class ListOptionForm(FlaskForm):
     submit = SubmitField('Save Option')
 
 
+class RepositoryCreateForm(FlaskForm):
+    """Form for creating a new repository (Admin/Editor).
+
+    Dynamic artifact fields are not WTForms fields — they are read directly from
+    request.form in the route handler after HTMX loads them.
+    """
+
+    template_id = SelectField('Template', coerce=int, validators=[DataRequired(message='Please select a template.')])
+    name = StringField('Repository name', validators=[DataRequired(), Length(max=255)])
+    url = StringField('Repository URL', validators=[DataRequired(), Length(max=2048)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    team_id = SelectField('Team', coerce=int, validators=[DataRequired(message='Please select a team.')])
+    submit = SubmitField('Create Repository')
+
+
+class RepositoryEditForm(FlaskForm):
+    """Form for editing an existing repository (Admin/Editor).
+
+    template_id is read-only — displayed in the form but not a WTForms field
+    so it cannot be changed via form submission (REQ-029).
+    """
+
+    name = StringField('Repository name', validators=[DataRequired(), Length(max=255)])
+    url = StringField('Repository URL', validators=[DataRequired(), Length(max=2048)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    team_id = SelectField('Team', coerce=int, validators=[DataRequired(message='Please select a team.')])
+    version = HiddenField('version')
+    submit = SubmitField('Save Changes')
+
+
 class SharedAttributeCreateForm(FlaskForm):
     """Form for creating a new custom shared attribute (Admin only)."""
 

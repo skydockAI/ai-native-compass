@@ -284,6 +284,66 @@ Click the **X icon** next to an option to permanently delete it. Deletion is onl
 
 ---
 
+## Repository Management (Admin and Editor)
+
+Repositories represent code repositories being tracked for AI Native adoption. Each repository is linked to one Team and one Repo Template, which determines which artifacts are tracked.
+
+### Viewing Repositories
+
+Navigate to **Repositories** in the sidebar. The list defaults to showing **active** repositories. Click **Show Archived** to see archived repositories.
+
+All authenticated users (Admin, Editor, Viewer) can view the repository list and repository detail pages.
+
+### Creating a Repository
+
+Repository creation follows a **template-first** workflow:
+
+1. Click **New Repository** on the repository list page (Admin or Editor only).
+2. Select a **Template** from the dropdown. After selection, the artifact fields for that template are loaded automatically.
+3. Fill in the default fields:
+   - **Repository name** (required)
+   - **Repository URL** (required, must be globally unique)
+   - **Description** (optional)
+   - **Team** (required — only active teams are shown)
+4. Fill in any **custom shared attributes** (if configured by an Admin).
+5. Fill in the **artifact values** loaded from the selected template:
+   - Document / Skill / Agent: Yes / No / N/A
+   - Other:text: free text
+   - Other:number: numeric value
+   - Other:boolean: True / False / N/A
+   - Other:list: select from dropdown options
+6. Click **Create Repository**.
+
+**Important:**
+- The template cannot be changed after creation.
+- Repository URLs must be unique across all repositories, including archived ones.
+- Required artifact fields (marked with a red asterisk) must be filled in before saving.
+
+### Viewing Repository Details
+
+Click on a repository name in the list, or click the **eye icon**, to open the detail page. The detail page shows:
+- Repository details (URL, Team, Template, Description, custom shared attributes)
+- All artifact values for the assigned template
+
+### Editing a Repository
+
+Click the **pencil icon** next to a repository in the list, or the **Edit** button on the detail page (Admin or Editor only).
+
+On the edit form:
+- The **Template** is shown as read-only and **cannot be changed**.
+- Name, URL, Description, Team, custom shared attribute values, and artifact values can all be updated.
+- The same validation rules apply (URL uniqueness, required artifacts).
+
+### Archiving a Repository
+
+Click the **archive icon** next to a repository and confirm (Admin or Editor only). Archived repositories are hidden from the default list but their data is preserved.
+
+### Reactivating a Repository
+
+Switch to the archived repositories view and click the **reactivate icon** next to a repository (Admin or Editor only).
+
+---
+
 ## Environment Variables
 
 | Variable | Description | Example |

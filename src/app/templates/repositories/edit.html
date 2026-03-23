@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ repo.name }} - Repositories - AI Native Compass{% endblock %}
+{% block nav_repositories %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('repositories.index') }}">Repositories</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('repositories.detail', repo_id=repo.id) }}">{{ repo.name }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+        <h1>
+            <i class="bi bi-pencil me-2 text-primary"></i>Edit Repository
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-9 col-xl-7">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    {# Template is read-only (REQ-029) #}
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Template</label>
+                        <div class="form-control-plaintext fw-semibold text-muted">
+                            <i class="bi bi-lock me-1"></i>{{ repo.template.name if repo.template else '—' }}
+                            <span class="badge bg-secondary ms-1">Read-only</span>
+                        </div>
+                        <div class="form-text">Template assignment cannot be changed after creation.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Repository name") }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.url.label(class="form-label") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.url(class="form-control" + (" is-invalid" if form.url.errors else ""), placeholder="https://github.com/org/repo") }}
+                        {% for error in form.url.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        <span class="text-muted small ms-1">(optional)</span>
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=3) }}
+                        {% for error in form.description.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.team_id.label(class="form-label") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.team_id(class="form-select" + (" is-invalid" if form.team_id.errors else "")) }}
+                        {% for error in form.team_id.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    {# Custom shared attributes + artifact fields (static — no HTMX needed on edit) #}
+                    {% include 'repositories/partials/artifact_fields.html' with context %}
+
+                    <hr class="my-4">
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('repositories.detail', repo_id=repo.id) }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
