@@ -15,7 +15,7 @@
     <div class="col-lg-8 col-xl-6">
         <div class="card">
             <div class="card-body">
-                <form method="POST" novalidate>
+                <form method="POST" novalidate{% if not is_edit %} autocomplete="off"{% endif %}>
                     {{ form.hidden_tag() }}
 
                     <div class="mb-3">
