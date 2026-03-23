@@ -15,7 +15,7 @@
                 <i class="bi bi-box-seam"></i>
             </div>
             <div class="stat-card-body">
-                <div class="stat-card-value">--</div>
+                <div class="stat-card-value">{{ counts.products }}</div>
                 <div class="stat-card-label">Products</div>
             </div>
         </a>
@@ -26,7 +26,7 @@
                 <i class="bi bi-code-square"></i>
             </div>
             <div class="stat-card-body">
-                <div class="stat-card-value">--</div>
+                <div class="stat-card-value">{{ counts.repositories }}</div>
                 <div class="stat-card-label">Repositories</div>
             </div>
         </a>
@@ -37,7 +37,7 @@
                 <i class="bi bi-file-earmark-text"></i>
             </div>
             <div class="stat-card-body">
-                <div class="stat-card-value">--</div>
+                <div class="stat-card-value">{{ counts.templates }}</div>
                 <div class="stat-card-label">Templates</div>
             </div>
         </a>
@@ -48,17 +48,23 @@
                 <i class="bi bi-people"></i>
             </div>
             <div class="stat-card-body">
-                <div class="stat-card-value">--</div>
+                <div class="stat-card-value">{{ counts.teams }}</div>
                 <div class="stat-card-label">Teams</div>
             </div>
         </a>
     </div>
-</div>
-
-<div class="card">
-    <div class="card-body empty-state">
-        <i class="bi bi-compass"></i>
-        <p class="mb-0">Welcome to AI Native Compass. Use the sidebar to navigate.</p>
+    {% if current_user.role.value == 'admin' %}
+    <div class="col-sm-6 col-xl-3">
+        <a href="/users" class="stat-card">
+            <div class="stat-card-icon stat-icon-rose">
+                <i class="bi bi-person-gear"></i>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-card-value">{{ counts.users }}</div>
+                <div class="stat-card-label">Users</div>
+            </div>
+        </a>
     </div>
+    {% endif %}
 </div>
 {% endblock %}

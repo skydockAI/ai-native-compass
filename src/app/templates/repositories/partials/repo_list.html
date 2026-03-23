@@ -1,0 +1,83 @@
+{% if repos %}
+<div class="table-responsive">
+    <table class="table table-hover mb-0">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>URL</th>
+                <th>Team</th>
+                <th>Template</th>
+                <th>Status</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for repo in repos %}
+            <tr{% if repo.is_archived %} class="text-muted"{% endif %}>
+                <td>
+                    <a href="{{ url_for('repositories.detail', repo_id=repo.id) }}" class="fw-semibold text-decoration-none">
+                        {{ repo.name }}
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ repo.url }}" target="_blank" rel="noopener noreferrer" class="text-truncate d-inline-block" style="max-width:220px;" title="{{ repo.url }}">
+                        {{ repo.url }}
+                    </a>
+                </td>
+                <td>{{ repo.team.name if repo.team else '—' }}</td>
+                <td>{{ repo.template.name if repo.template else '—' }}</td>
+                <td>
+                    {% if repo.is_archived %}
+                        <span class="badge bg-warning text-dark">Archived</span>
+                    {% elif repo.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="text-end">
+                    <div class="btn-group btn-group-sm">
+                        <a href="{{ url_for('repositories.detail', repo_id=repo.id) }}" class="btn btn-outline-secondary" title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% if current_user.role.value in ('admin', 'editor') %}
+                        {% if not repo.is_archived %}
+                            <a href="{{ url_for('repositories.edit', repo_id=repo.id) }}" class="btn btn-outline-primary" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{{ url_for('repositories.duplicate', repo_id=repo.id) }}" class="btn btn-outline-secondary" title="Duplicate">
+                                <i class="bi bi-copy"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" title="Archive"
+                                    onclick="showConfirmModal('Archive Repository', 'Are you sure you want to archive &quot;{{ repo.name }}&quot;?', '{{ url_for('repositories.archive', repo_id=repo.id) }}')">
+                                <i class="bi bi-archive"></i>
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn btn-outline-success" title="Reactivate"
+                                    onclick="showConfirmModal('Reactivate Repository', 'Are you sure you want to reactivate &quot;{{ repo.name }}&quot;?', '{{ url_for('repositories.reactivate', repo_id=repo.id) }}')">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card-body empty-state">
+    <i class="bi bi-code-square"></i>
+    <p class="mb-0">
+        {% if show_archived %}
+            No archived repositories found.
+        {% else %}
+            No repositories found.
+            {% if current_user.role.value in ('admin', 'editor') %}
+            <a href="{{ url_for('repositories.create') }}">Create the first repository.</a>
+            {% endif %}
+        {% endif %}
+    </p>
+</div>
+{% endif %}

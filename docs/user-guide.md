@@ -102,6 +102,26 @@ The system uses three roles with different permission levels:
 
 ---
 
+## Dashboard
+
+After signing in, you are taken directly to the **Dashboard**. The dashboard provides a high-level overview of the system.
+
+### Summary Cards
+
+The dashboard shows summary cards with live counts of active (non-archived) entities:
+
+| Card | Description |
+|------|-------------|
+| **Products** | Number of active products |
+| **Repositories** | Number of active repositories |
+| **Templates** | Number of active templates |
+| **Teams** | Number of active teams |
+| **Users** | Number of active users (Admin only) |
+
+Clicking a card navigates to the corresponding list page.
+
+---
+
 ## Navigation
 
 The application uses a sidebar navigation with the following sections:
@@ -109,7 +129,7 @@ The application uses a sidebar navigation with the following sections:
 - **Dashboard** — Overview with summary cards
 - **Products** — Manage products
 - **Repositories** — Manage code repositories
-- **Templates** — Manage repo templates (Admin only)
+- **Templates** — Manage repo templates
 - **Teams** — Manage teams
 - **Users** — Manage users (Admin only)
 - **Audit Log** — View audit history (Admin only)
@@ -122,7 +142,13 @@ The Administration section (Users, Audit Log) is only visible in the sidebar for
 
 ### Viewing Users
 
-Navigate to **Users** in the sidebar. The list defaults to showing **active** users. Click **Show Archived** to see archived users.
+Navigate to **Users** in the sidebar. The list defaults to showing **active** users.
+
+Use the **filter bar** at the top of the list to narrow results:
+- **Role** — Filter by Admin, Editor, or Viewer
+- **Status** — Switch between Active and Archived users
+
+Filters update the list instantly without a full page reload.
 
 ### Creating a User
 
@@ -156,7 +182,7 @@ Teams are used to categorise code repositories. Each repository belongs to exact
 
 ### Viewing Teams
 
-Navigate to **Teams** in the sidebar. The list defaults to showing **active** teams. Click **Show Archived** to see archived teams.
+Navigate to **Teams** in the sidebar. The list defaults to showing **active** teams. Use the **Status** filter in the filter bar to switch to Archived teams.
 
 All authenticated users (Admin, Editor, Viewer) can view the team list.
 
@@ -190,7 +216,7 @@ Repo Templates define the set of artifacts (documents, skills, agents, and custo
 
 ### Viewing Templates
 
-Navigate to **Templates** in the sidebar. The list defaults to showing **active** templates. Click **Show Archived** to see archived templates.
+Navigate to **Templates** in the sidebar. The list defaults to showing **active** templates. Use the **Status** filter in the filter bar to switch to Archived templates.
 
 All authenticated users can view the template list and template detail pages.
 
@@ -292,7 +318,15 @@ Repositories represent code repositories being tracked for AI Native adoption. E
 
 ### Viewing Repositories
 
-Navigate to **Repositories** in the sidebar. The list defaults to showing **active** repositories. Click **Show Archived** to see archived repositories.
+Navigate to **Repositories** in the sidebar. The list defaults to showing **active** repositories.
+
+Use the **filter bar** at the top of the list to narrow results:
+- **Product** — Show only repositories linked to a specific product
+- **Team** — Show only repositories belonging to a specific team
+- **Template** — Show only repositories using a specific template
+- **Status** — Switch between Active and Archived repositories
+
+Filters can be combined and update the list instantly without a full page reload.
 
 All authenticated users (Admin, Editor, Viewer) can view the repository list and repository detail pages.
 
@@ -376,7 +410,7 @@ Products are business-level entities that group one or more code repositories un
 
 ### Viewing Products
 
-Navigate to **Products** in the sidebar. The list defaults to showing **active** products. Click **Show Archived** to see archived products alongside active ones.
+Navigate to **Products** in the sidebar. The list defaults to showing **active** products. Use the **Status** filter in the filter bar to switch to Archived products.
 
 All authenticated users (Admin, Editor, Viewer) can view the product list and product detail pages.
 

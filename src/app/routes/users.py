@@ -24,14 +24,24 @@ users_bp = Blueprint('users', __name__, url_prefix='/users')
 @login_required
 @role_required('admin')
 def index():
-    """User list with active/archived filter (REQ-047)."""
+    """User list with active/archived and role filters (REQ-047, REQ-058)."""
     show_archived = request.args.get('archived', '0') == '1'
-    users = user_service.get_users(include_archived=True) if show_archived else user_service.get_users()
-    return render_template(
-        'users/list.html',
+    role_filter = request.args.get('role', '')
+
+    users = user_service.get_users(
+        include_archived=show_archived,
+        role=role_filter or None,
+    )
+
+    ctx = dict(
         users=users,
         show_archived=show_archived,
+        role_filter=role_filter,
     )
+
+    if request.headers.get('HX-Request'):
+        return render_template('users/partials/user_list.html', **ctx)
+    return render_template('users/list.html', **ctx)
 
 
 # --------------------------------------------------------------------------

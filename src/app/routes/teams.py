@@ -18,14 +18,13 @@ teams_bp = Blueprint('teams', __name__, url_prefix='/teams')
 @teams_bp.route('/')
 @login_required
 def index():
-    """Team list with active/archived filter."""
+    """Team list with active/archived filter (REQ-058)."""
     show_archived = request.args.get('archived', '0') == '1'
-    teams = team_service.get_teams(include_archived=True) if show_archived else team_service.get_teams()
-    return render_template(
-        'teams/list.html',
-        teams=teams,
-        show_archived=show_archived,
-    )
+    teams = team_service.get_teams(include_archived=show_archived)
+    ctx = dict(teams=teams, show_archived=show_archived)
+    if request.headers.get('HX-Request'):
+        return render_template('teams/partials/team_list.html', **ctx)
+    return render_template('teams/list.html', **ctx)
 
 
 # --------------------------------------------------------------------------

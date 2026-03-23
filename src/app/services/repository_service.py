@@ -3,7 +3,7 @@
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
-from ..models.repository import Repository, RepositoryArtifactValue
+from ..models.repository import Repository, RepositoryArtifactValue, product_repository
 from ..models.shared_attribute import RepositorySharedAttributeValue
 from ..models.template import ArtifactType, ArtifactValueType
 
@@ -16,11 +16,27 @@ class RepositoryServiceError(Exception):
 # Queries
 # ---------------------------------------------------------------------------
 
-def get_repositories(include_archived=False):
-    """Return repositories ordered by name, optionally including archived (REQ-027)."""
+def get_repositories(include_archived=False, product_id=None, team_id=None, template_id=None):
+    """Return repositories ordered by name with optional filters (REQ-027, REQ-058).
+
+    Filters are applied additively (AND logic):
+    - include_archived: include archived repositories
+    - product_id: only repos linked to this product via product_repository table
+    - team_id: only repos belonging to this team
+    - template_id: only repos using this template
+    """
     query = Repository.query.order_by(Repository.name)
     if not include_archived:
         query = query.filter_by(is_archived=False)
+    if team_id:
+        query = query.filter(Repository.team_id == team_id)
+    if template_id:
+        query = query.filter(Repository.template_id == template_id)
+    if product_id:
+        query = query.join(
+            product_repository,
+            Repository.id == product_repository.c.repository_id,
+        ).filter(product_repository.c.product_id == product_id)
     return query.all()
 
 

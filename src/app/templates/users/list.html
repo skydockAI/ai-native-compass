@@ -6,105 +6,44 @@
 {% block content %}
 <div class="page-header">
     <h1><i class="bi bi-person-gear me-2 text-primary"></i>Users</h1>
-    <div class="d-flex gap-2 align-items-center">
-        {% if show_archived %}
-            <a href="{{ url_for('users.index') }}" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-eye me-1"></i>Show Active
-            </a>
-        {% else %}
-            <a href="{{ url_for('users.index', archived='1') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-archive me-1"></i>Show Archived
-            </a>
-        {% endif %}
-        <a href="{{ url_for('users.create') }}" class="btn btn-primary btn-sm">
-            <i class="bi bi-plus-lg me-1"></i>New User
-        </a>
+    <a href="{{ url_for('users.create') }}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg me-1"></i>New User
+    </a>
+</div>
+
+<!-- Filter bar -->
+<div class="card mb-3">
+    <div class="card-body py-2">
+        <form id="user-filter-form"
+              hx-get="{{ url_for('users.index') }}"
+              hx-target="#user-list-content"
+              hx-push-url="true"
+              hx-trigger="change, submit"
+              class="row g-2 align-items-end">
+            <div class="col-sm-6 col-md-4">
+                <label class="form-label small mb-1">Role</label>
+                <select name="role" class="form-select form-select-sm">
+                    <option value="">All Roles</option>
+                    <option value="admin"{% if role_filter == 'admin' %} selected{% endif %}>Admin</option>
+                    <option value="editor"{% if role_filter == 'editor' %} selected{% endif %}>Editor</option>
+                    <option value="viewer"{% if role_filter == 'viewer' %} selected{% endif %}>Viewer</option>
+                </select>
+            </div>
+            <div class="col-sm-6 col-md-4">
+                <label class="form-label small mb-1">Status</label>
+                <select name="archived" class="form-select form-select-sm">
+                    <option value="0"{% if not show_archived %} selected{% endif %}>Active</option>
+                    <option value="1"{% if show_archived %} selected{% endif %}>Archived</option>
+                </select>
+            </div>
+        </form>
     </div>
 </div>
 
 <div class="card">
-    {% if users %}
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th class="text-end">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                {% if show_archived or not user.is_archived %}
-                <tr{% if user.is_archived %} class="text-muted"{% endif %}>
-                    <td>
-                        {{ user.full_name }}
-                        {% if user.is_seeded %}
-                            <span class="badge bg-info ms-1" title="Seeded admin">Seeded</span>
-                        {% endif %}
-                    </td>
-                    <td>{{ user.email }}</td>
-                    <td>
-                        {% if user.role.value == 'admin' %}
-                            <span class="badge bg-danger">Admin</span>
-                        {% elif user.role.value == 'editor' %}
-                            <span class="badge bg-primary">Editor</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Viewer</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        {% if user.is_archived %}
-                            <span class="badge bg-warning text-dark">Archived</span>
-                        {% elif user.is_active %}
-                            <span class="badge bg-success">Active</span>
-                        {% else %}
-                            <span class="badge bg-secondary">Inactive</span>
-                        {% endif %}
-                    </td>
-                    <td class="text-end">
-                        <div class="btn-group btn-group-sm">
-                            {% if not user.is_archived %}
-                                <a href="{{ url_for('users.edit', user_id=user.id) }}" class="btn btn-outline-primary" title="Edit">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <a href="{{ url_for('users.reset_password', user_id=user.id) }}" class="btn btn-outline-secondary" title="Reset Password">
-                                    <i class="bi bi-key"></i>
-                                </a>
-                                {% if not user.is_seeded %}
-                                <button type="button" class="btn btn-outline-danger" title="Archive"
-                                        onclick="showConfirmModal('Archive User', 'Are you sure you want to archive {{ user.full_name }}? They will no longer be able to log in.', '{{ url_for('users.archive', user_id=user.id) }}')">
-                                    <i class="bi bi-archive"></i>
-                                </button>
-                                {% endif %}
-                            {% else %}
-                                <button type="button" class="btn btn-outline-success" title="Reactivate"
-                                        onclick="showConfirmModal('Reactivate User', 'Are you sure you want to reactivate {{ user.full_name }}?', '{{ url_for('users.reactivate', user_id=user.id) }}')">
-                                    <i class="bi bi-arrow-counterclockwise"></i>
-                                </button>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
+    <div id="user-list-content">
+        {% include 'users/partials/user_list.html' %}
     </div>
-    {% else %}
-    <div class="card-body empty-state">
-        <i class="bi bi-person-x"></i>
-        <p class="mb-0">
-            {% if show_archived %}
-                No archived users found.
-            {% else %}
-                No users found. Create the first user to get started.
-            {% endif %}
-        </p>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}
 

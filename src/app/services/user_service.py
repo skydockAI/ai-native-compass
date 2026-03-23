@@ -8,11 +8,21 @@ class UserServiceError(Exception):
     """Raised when a user operation fails with a user-facing message."""
 
 
-def get_users(include_archived=False):
-    """Return users, optionally including archived ones."""
+def get_users(include_archived=False, role=None):
+    """Return users with optional filters (REQ-047, REQ-058).
+
+    - include_archived: include archived users
+    - role: filter by role value string ('admin', 'editor', 'viewer')
+    """
     query = User.query.order_by(User.full_name)
     if not include_archived:
         query = query.filter_by(is_archived=False)
+    if role:
+        try:
+            role_enum = UserRole(role)
+            query = query.filter(User.role == role_enum)
+        except ValueError:
+            pass  # ignore invalid role values
     return query.all()
 
 
