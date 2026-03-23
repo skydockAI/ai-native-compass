@@ -15,3 +15,4 @@ This document indexes all test suites for the AI Native Compass (ANC) project.
 | [TS-005](test-suites/TS-005.md) | Team Management | DI-004 | REQ-019, REQ-020, REQ-022, REQ-049 |
 | [TS-006](test-suites/TS-006.md) | Repo Template & Artifact Management | DI-005 | REQ-031, REQ-032, REQ-033, REQ-037, REQ-038, REQ-039, REQ-040, REQ-041, REQ-049 |
 | [TS-007](test-suites/TS-007.md) | Repository Core Management | DI-007 | REQ-021, REQ-027, REQ-028, REQ-029, REQ-030, REQ-050, REQ-051 |
+| [TS-008](test-suites/TS-008.md) | Template Change Propagation & Repository Duplication | DI-008 | REQ-042, REQ-043, REQ-044, REQ-045, REQ-052 |

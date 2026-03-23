@@ -186,6 +186,21 @@ def add_artifact(template_id, artifact_type, name, description=None,
         display_order=int(display_order),
     )
     db.session.add(artifact)
+    db.session.flush()  # get artifact.id before propagation
+
+    # Propagate: create empty artifact value rows for all active repos using this template (REQ-042)
+    try:
+        from ..models.repository import Repository, RepositoryArtifactValue
+        active_repos = Repository.query.filter_by(template_id=template_id, is_archived=False).all()
+        for repo in active_repos:
+            av = RepositoryArtifactValue(
+                repository_id=repo.id,
+                template_artifact_id=artifact.id,
+            )
+            db.session.add(av)
+    except ImportError:
+        pass  # Repository model not yet available (pre-DI-007 env)
+
     db.session.commit()
     return artifact
 
@@ -212,11 +227,16 @@ def update_artifact(artifact_id, name, description=None, is_required=False, disp
 
 
 def remove_artifact(artifact_id):
-    """Hard-delete an artifact from a template."""
+    """Soft-delete an artifact from a template (REQ-044).
+
+    Sets ``is_active = False`` so the artifact is hidden from the UI but
+    existing ``RepositoryArtifactValue`` rows are preserved for audit history.
+    """
     artifact = db.session.get(TemplateArtifact, artifact_id)
     if artifact is None:
         raise TemplateServiceError('Artifact not found.')
-    db.session.delete(artifact)
+    artifact.is_active = False
+    artifact.version += 1
     db.session.commit()
 
 

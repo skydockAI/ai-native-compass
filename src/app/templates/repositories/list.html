@@ -72,6 +72,9 @@
                                 <a href="{{ url_for('repositories.edit', repo_id=repo.id) }}" class="btn btn-outline-primary" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
+                                <a href="{{ url_for('repositories.duplicate', repo_id=repo.id) }}" class="btn btn-outline-secondary" title="Duplicate">
+                                    <i class="bi bi-copy"></i>
+                                </a>
                                 <button type="button" class="btn btn-outline-danger" title="Archive"
                                         onclick="showConfirmModal('Archive Repository', 'Are you sure you want to archive &quot;{{ repo.name }}&quot;?', '{{ url_for('repositories.archive', repo_id=repo.id) }}')">
                                     <i class="bi bi-archive"></i>
