@@ -193,6 +193,7 @@ def edit(repo_id):
         'repositories/edit.html',
         form=form,
         repo=repo,
+        template=repo.template,
         artifact_values=artifact_values_map,
         shared_attr_values=shared_attr_values_map,
         custom_attrs=custom_attrs,

@@ -229,6 +229,21 @@ class TestRepositoryEditRoute:
         assert resp.status_code == 200
         assert b'Route Repo' in resp.data
 
+    def test_edit_form_shows_artifact_fields(self, admin_client, team, template, doc_artifact):
+        """Artifact fields must be rendered on the edit form, not the 'select a template' placeholder."""
+        from app.services import repository_service as rs
+        repo = rs.create_repository(
+            name='ArtifactEditRepo',
+            url='https://github.com/org/artifact-edit-repo',
+            team_id=team.id,
+            template_id=template.id,
+            artifact_values={doc_artifact.id: 'Yes'},
+        )
+        resp = admin_client.get(f'/repositories/{repo.id}/edit')
+        assert resp.status_code == 200
+        assert b'Select a template above' not in resp.data
+        assert b'Design Doc' in resp.data
+
     # TC-007-024: Template field read-only on edit
     def test_template_not_changeable_via_edit(self, admin_client, db, team, template, repo):
         t2 = RepoTemplate(name='Other Template')
