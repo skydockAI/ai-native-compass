@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Templates - AI Native Compass{% endblock %}
+{% block nav_templates %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-file-earmark-text me-2 text-primary"></i>Templates</h1>
+    <div class="d-flex gap-2 align-items-center">
+        {% if show_archived %}
+            <a href="{{ url_for('templates.index') }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-eye me-1"></i>Show Active
+            </a>
+        {% else %}
+            <a href="{{ url_for('templates.index', archived='1') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-archive me-1"></i>Show Archived
+            </a>
+        {% endif %}
+        {% if current_user.role.value == 'admin' %}
+        <a href="{{ url_for('templates.create') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>New Template
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    {% if templates %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Artifacts</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tmpl in templates %}
+                <tr{% if tmpl.is_archived %} class="text-muted"{% endif %}>
+                    <td>
+                        <a href="{{ url_for('templates.detail', template_id=tmpl.id) }}" class="fw-semibold text-decoration-none">
+                            {{ tmpl.name }}
+                        </a>
+                    </td>
+                    <td>{{ tmpl.description or '—' }}</td>
+                    <td>
+                        <span class="badge bg-secondary">{{ tmpl.artifacts | selectattr('is_active') | list | length }}</span>
+                    </td>
+                    <td>
+                        {% if tmpl.is_archived %}
+                            <span class="badge bg-warning text-dark">Archived</span>
+                        {% elif tmpl.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if current_user.role.value == 'admin' %}
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('templates.detail', template_id=tmpl.id) }}" class="btn btn-outline-secondary" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if not tmpl.is_archived %}
+                                <a href="{{ url_for('templates.edit', template_id=tmpl.id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" title="Archive"
+                                        onclick="showConfirmModal('Archive Template', 'Are you sure you want to archive the template &quot;{{ tmpl.name }}&quot;?', '{{ url_for('templates.archive', template_id=tmpl.id) }}')">
+                                    <i class="bi bi-archive"></i>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-success" title="Reactivate"
+                                        onclick="showConfirmModal('Reactivate Template', 'Are you sure you want to reactivate the template &quot;{{ tmpl.name }}&quot;?', '{{ url_for('templates.reactivate', template_id=tmpl.id) }}')">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <a href="{{ url_for('templates.detail', template_id=tmpl.id) }}" class="btn btn-outline-secondary btn-sm" title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body empty-state">
+        <i class="bi bi-file-earmark-text"></i>
+        <p class="mb-0">
+            {% if show_archived %}
+                No archived templates found.
+            {% else %}
+                No templates found. Create the first template to get started.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showConfirmModal(title, message, actionUrl) {
+    document.getElementById('confirmModalLabel').textContent = title;
+    document.getElementById('confirmModalBody').innerHTML = message;
+    document.getElementById('confirmModalForm').action = actionUrl;
+    var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

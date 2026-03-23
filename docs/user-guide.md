@@ -184,6 +184,106 @@ Switch to the archived teams view and click the **reactivate icon** next to a te
 
 ---
 
+## Template Management (Admin Only)
+
+Repo Templates define the set of artifacts (documents, skills, agents, and custom items) that repositories using the template are expected to track.
+
+### Viewing Templates
+
+Navigate to **Templates** in the sidebar. The list defaults to showing **active** templates. Click **Show Archived** to see archived templates.
+
+All authenticated users can view the template list and template detail pages.
+
+### Creating a Template
+
+1. Click **New Template** on the template list page (Admin only).
+2. Enter a **template name** (required, must be unique) and an optional **description**.
+3. Click **Create Template**.
+
+Template names must be unique across the system.
+
+### Editing a Template
+
+Click the **pencil icon** next to a template, or open the template detail page and click **Edit Template** (Admin only). Update the name or description and click **Save Changes**.
+
+### Archiving a Template
+
+Click the **archive icon** next to a template and confirm (Admin only).
+
+A template **cannot** be archived while it has active repositories assigned to it. The error message will list the blocking repositories. Archive or reassign those repositories first, then archive the template.
+
+### Reactivating a Template
+
+Switch to the archived templates view and click the **reactivate icon** next to a template (Admin only).
+
+---
+
+## Artifact Management within Templates (Admin Only)
+
+Each template contains a list of **artifacts** — items that repositories using the template are expected to track.
+
+### Artifact Types
+
+| Type | Value Options |
+|------|--------------|
+| **Document** | Yes / No / N/A |
+| **Skill** | Yes / No / N/A |
+| **Agent** | Yes / No / N/A |
+| **Other** | text, number, boolean (True/False/N/A), or list |
+
+### Adding an Artifact
+
+1. Open a template's detail page.
+2. Click **Add Artifact**.
+3. Select the **type** (Document, Skill, Agent, or Other).
+4. Enter a **name** and optional **description**.
+5. For **Other** type: select a **value type** (text, number, boolean, or list) and optionally mark as **Required**.
+6. Set a **display order** to control the artifact's position in the list.
+7. Click **Save Artifact**.
+
+Note: Artifact type and value type cannot be changed after creation.
+
+### Editing an Artifact
+
+Click the **pencil icon** next to an artifact on the template detail page. You can update the name, description, required flag, and display order.
+
+### Removing an Artifact
+
+Click the **trash icon** next to an artifact and confirm. This permanently removes the artifact definition from the template.
+
+### Required Flag (Other type only)
+
+When an Other-type artifact is marked **Required**, repositories using this template must provide a value for it when saving. The UI displays a "Required" badge to indicate this.
+
+---
+
+## List Option Management (Admin Only)
+
+For **Other:list** artifacts, Admin users define the dropdown options available for selection.
+
+### Adding a List Option
+
+1. On the template detail page, click the **list icon** next to an Other:list artifact.
+2. Enter the **option value** and an optional **display order**.
+3. Click **Save Option**.
+
+### Editing a List Option
+
+Click the **pencil icon** next to an option on the template detail page to update its value or display order.
+
+### Deactivating a List Option
+
+Click the **dash-circle icon** next to an option to deactivate it. Deactivated options:
+- Are hidden from new selections on repository edit pages.
+- Are still displayed on repositories that already have them selected.
+- Can be deactivated even if currently in use.
+
+### Deleting a List Option
+
+Click the **X icon** next to an option to permanently delete it. Deletion is only allowed if the option is **not currently selected by any repository**. If it is in use, deactivate it instead.
+
+---
+
 ## Environment Variables
 
 | Variable | Description | Example |
