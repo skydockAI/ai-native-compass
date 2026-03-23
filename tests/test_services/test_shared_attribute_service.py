@@ -43,6 +43,18 @@ class TestGetAttributes:
         names = [a.name for a in results]
         assert 'Custom' in names
 
+    def test_custom_only_excludes_defaults(self, db):
+        """custom_only=True must exclude is_default attrs (URL, Team, etc.) to prevent
+        duplication on repository pages that already render those as native fields."""
+        _seed_defaults(db)
+        shared_attribute_service.create_attribute('Tech Stack')
+
+        results = shared_attribute_service.get_attributes(custom_only=True)
+        names = [a.name for a in results]
+        assert 'Tech Stack' in names
+        for default_name in ('Name', 'Team', 'URL', 'Description'):
+            assert default_name not in names
+
     def test_defaults_appear_first(self, db):
         _seed_defaults(db)
         shared_attribute_service.create_attribute('Zzz Custom')

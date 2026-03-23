@@ -14,10 +14,13 @@ class SharedAttributeServiceError(Exception):
 # Queries
 # ---------------------------------------------------------------------------
 
-def get_attributes(include_inactive=False):
+def get_attributes(include_inactive=False, custom_only=False):
     """Return shared attribute definitions ordered by defaults first, then name.
 
     By default only active attributes are returned.
+    Pass ``custom_only=True`` to exclude the four default attributes (Name, Team,
+    URL, Description) — used in repository pages where those are already rendered
+    as native model fields (REQ-034).
     """
     query = SharedAttributeDefinition.query.order_by(
         SharedAttributeDefinition.is_default.desc(),
@@ -25,6 +28,8 @@ def get_attributes(include_inactive=False):
     )
     if not include_inactive:
         query = query.filter_by(is_active=True)
+    if custom_only:
+        query = query.filter_by(is_default=False)
     return query.all()
 
 

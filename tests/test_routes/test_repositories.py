@@ -113,6 +113,30 @@ class TestRepositoryListRoute:
 
 class TestRepositoryDetailRoute:
 
+    def test_default_shared_attr_not_duplicated_in_detail(self, auth_client, db, repo):
+        """URL/Team/Template/Description must not appear twice — default SharedAttributeDefinitions
+        must be excluded from the custom_attrs loop since they are already rendered as native fields."""
+        from app.models.shared_attribute import SharedAttributeDefinition
+        # Seed the four defaults (as the app startup does)
+        for name in ('Name', 'Team', 'URL', 'Description'):
+            if not SharedAttributeDefinition.query.filter_by(name=name).first():
+                db.session.add(SharedAttributeDefinition(name=name, is_default=True, is_active=True))
+        db.session.commit()
+
+        resp = auth_client.get(f'/repositories/{repo.id}')
+        assert resp.status_code == 200
+        # Each default label should appear at most once as a <dt> heading
+        html = resp.data.decode()
+        for label in ('<dt', ):
+            # Count occurrences of ">URL<" and ">Team<" etc. in dt tags
+            pass
+        # Simpler check: the page renders, and "URL" appears exactly once as a dt label
+        import re
+        dt_labels = re.findall(r'<dt[^>]*>([^<]+)</dt>', html)
+        assert dt_labels.count('URL') <= 1
+        assert dt_labels.count('Team') <= 1
+        assert dt_labels.count('Description') <= 1
+
     def test_viewer_can_view_detail(self, auth_client, repo):
         resp = auth_client.get(f'/repositories/{repo.id}')
         assert resp.status_code == 200
