@@ -164,6 +164,14 @@ class RepositoryEditForm(FlaskForm):
     submit = SubmitField('Save Changes')
 
 
+class RepositoryDuplicateForm(FlaskForm):
+    """Form for duplicating a repository with a new name and URL (REQ-052)."""
+
+    name = StringField('Repository name', validators=[DataRequired(), Length(max=255)])
+    url = StringField('Repository URL', validators=[DataRequired(), Length(max=2048)])
+    submit = SubmitField('Duplicate Repository')
+
+
 class SharedAttributeCreateForm(FlaskForm):
     """Form for creating a new custom shared attribute (Admin only)."""
 

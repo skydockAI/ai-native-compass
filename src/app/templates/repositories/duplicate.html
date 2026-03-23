@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Duplicate {{ source.name }} - AI Native Compass{% endblock %}
+{% block nav_repositories %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('repositories.index') }}">Repositories</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('repositories.detail', repo_id=source.id) }}">{{ source.name }}</a></li>
+                <li class="breadcrumb-item active">Duplicate</li>
+            </ol>
+        </nav>
+        <h1>
+            <i class="bi bi-copy me-2 text-primary"></i>Duplicate Repository
+        </h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 col-xl-6">
+
+        {# Source info card #}
+        <div class="card mb-3 border-info">
+            <div class="card-header bg-info bg-opacity-10 text-info-emphasis">
+                <i class="bi bi-info-circle me-1"></i>Duplicating from
+            </div>
+            <div class="card-body py-2">
+                <dl class="row mb-0 small">
+                    <dt class="col-sm-3">Source</dt>
+                    <dd class="col-sm-9">{{ source.name }}</dd>
+                    <dt class="col-sm-3">Template</dt>
+                    <dd class="col-sm-9">{{ source.template.name if source.template else '—' }}</dd>
+                    <dt class="col-sm-3">Team</dt>
+                    <dd class="col-sm-9">{{ source.team.name if source.team else '—' }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label fw-semibold") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), autofocus=true) }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.url.label(class="form-label fw-semibold") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.url(class="form-control" + (" is-invalid" if form.url.errors else ""), placeholder="https://github.com/org/new-repo") }}
+                        {% for error in form.url.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>
+                            A unique URL is required. All other values are copied from the source repository.
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('repositories.detail', repo_id=source.id) }}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

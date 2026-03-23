@@ -206,6 +206,73 @@ def update_repository(repo_id, name, url, team_id, description=None,
 
 
 # ---------------------------------------------------------------------------
+# Duplicate
+# ---------------------------------------------------------------------------
+
+def duplicate_repository(source_repo_id, name, url):
+    """Duplicate a repository with a new name and URL (REQ-052).
+
+    Copies all ``RepositoryArtifactValue`` and ``RepositorySharedAttributeValue`` rows
+    from the source repository to the new one.  The new repository uses the same
+    ``team_id`` and ``template_id`` as the source.
+
+    Product links (``product_repository``) are NOT copied.
+
+    Raises ``RepositoryServiceError`` on any validation failure.
+    """
+    source = db.session.get(Repository, source_repo_id)
+    if source is None:
+        raise RepositoryServiceError('Source repository not found.')
+
+    name = _validate_name(name)
+    url = _validate_url(url)
+    _check_url_unique(url, exclude_id=None)
+
+    dup = Repository(
+        name=name,
+        url=url,
+        description=source.description,
+        team_id=source.team_id,
+        template_id=source.template_id,
+    )
+    try:
+        db.session.add(dup)
+        db.session.flush()  # get dup.id
+    except Exception:
+        db.session.rollback()
+        raise RepositoryServiceError(f'A repository with URL "{url}" already exists.')
+
+    # Copy artifact values
+    for av in source.artifact_values:
+        new_av = RepositoryArtifactValue(
+            repository_id=dup.id,
+            template_artifact_id=av.template_artifact_id,
+            value_text=av.value_text,
+            value_number=av.value_number,
+            value_boolean=av.value_boolean,
+            value_list_option_id=av.value_list_option_id,
+        )
+        db.session.add(new_av)
+
+    # Copy shared attribute values
+    for sav in source.shared_attr_values:
+        new_sav = RepositorySharedAttributeValue(
+            repository_id=dup.id,
+            attribute_id=sav.attribute_id,
+            value=sav.value,
+        )
+        db.session.add(new_sav)
+
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise RepositoryServiceError(f'A repository with URL "{url}" already exists.')
+
+    return dup
+
+
+# ---------------------------------------------------------------------------
 # Archive / Reactivate
 # ---------------------------------------------------------------------------
 

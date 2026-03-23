@@ -249,7 +249,9 @@ Click the **pencil icon** next to an artifact on the template detail page. You c
 
 ### Removing an Artifact
 
-Click the **trash icon** next to an artifact and confirm. This permanently removes the artifact definition from the template.
+Click the **trash icon** next to an artifact and confirm. This **soft-deletes** the artifact: it is hidden from repository UI but all previously stored values are preserved in the database for audit purposes. Repositories that had values for the removed artifact retain those values internally.
+
+When a new artifact is added to a template, empty artifact value rows are automatically created for all **active** (non-archived) repositories using that template. This ensures every repository has a slot for the new artifact ready to be filled in.
 
 ### Required Flag (Other type only)
 
@@ -341,6 +343,19 @@ Click the **archive icon** next to a repository and confirm (Admin or Editor onl
 ### Reactivating a Repository
 
 Switch to the archived repositories view and click the **reactivate icon** next to a repository (Admin or Editor only).
+
+### Duplicating a Repository
+
+Click the **Duplicate** button on a repository's detail page or the **copy icon** in the repository list (Admin or Editor only).
+
+On the duplicate form:
+- **Repository name** is pre-filled with "Copy of \<source name\>" — edit as needed.
+- **Repository URL** must be a new, unique URL (the source URL is not carried over).
+- All **artifact values** and **custom shared attribute values** from the source are copied to the duplicate.
+- The duplicate uses the same **Template** and **Team** as the source.
+- **Product links are not copied** — the duplicate starts with no product associations.
+
+After saving, you are redirected to the new repository's detail page.
 
 ---
 

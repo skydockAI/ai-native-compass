@@ -6,7 +6,7 @@ from flask_login import login_required
 from ..authz import role_required
 from ..services import repository_service, shared_attribute_service, team_service, template_service
 from ..services.repository_service import RepositoryServiceError
-from .forms import RepositoryCreateForm, RepositoryEditForm
+from .forms import RepositoryCreateForm, RepositoryDuplicateForm, RepositoryEditForm
 
 repositories_bp = Blueprint('repositories', __name__, url_prefix='/repositories')
 
@@ -196,6 +196,45 @@ def edit(repo_id):
         artifact_values=artifact_values_map,
         shared_attr_values=shared_attr_values_map,
         custom_attrs=custom_attrs,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Duplicate repository (Admin + Editor)
+# ---------------------------------------------------------------------------
+
+@repositories_bp.route('/<int:repo_id>/duplicate', methods=['GET', 'POST'])
+@login_required
+@role_required('admin', 'editor')
+def duplicate(repo_id):
+    """Display and process the duplicate-repository form (REQ-052)."""
+    source = repository_service.get_repository_by_id(repo_id)
+    if source is None:
+        flash('Repository not found.', 'danger')
+        return redirect(url_for('repositories.index'))
+
+    form = RepositoryDuplicateForm()
+
+    if request.method == 'GET':
+        form.name.data = f'Copy of {source.name}'
+        form.url.data = ''
+
+    if form.validate_on_submit():
+        try:
+            dup = repository_service.duplicate_repository(
+                source_repo_id=repo_id,
+                name=form.name.data,
+                url=form.url.data,
+            )
+            flash('Repository duplicated successfully.', 'success')
+            return redirect(url_for('repositories.detail', repo_id=dup.id))
+        except RepositoryServiceError as exc:
+            flash(str(exc), 'danger')
+
+    return render_template(
+        'repositories/duplicate.html',
+        form=form,
+        source=source,
     )
 
 

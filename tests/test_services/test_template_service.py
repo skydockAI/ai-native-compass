@@ -293,8 +293,8 @@ class TestUpdateArtifact:
 
 class TestRemoveArtifact:
 
-    # TC-006-024
-    def test_remove_artifact(self, db):
+    # TC-006-024 / TC-008-004: remove_artifact soft-deletes (is_active=False), row preserved
+    def test_remove_artifact_soft_deletes(self, db):
         tmpl = template_service.create_template(name='DelT')
         a = template_service.add_artifact(
             template_id=tmpl.id,
@@ -305,7 +305,9 @@ class TestRemoveArtifact:
         template_service.remove_artifact(artifact_id)
 
         from app.models.template import TemplateArtifact
-        assert db.session.get(TemplateArtifact, artifact_id) is None
+        fetched = db.session.get(TemplateArtifact, artifact_id)
+        assert fetched is not None
+        assert fetched.is_active is False
 
     def test_remove_nonexistent_artifact_raises(self, db):
         with pytest.raises(TemplateServiceError, match='not found'):
