@@ -55,8 +55,9 @@
     </div>
     {% endif %}
 
-    {% if current_user.role.value in ('admin', 'editor') and available_products %}
+    {% if current_user.role.value in ('admin', 'editor') %}
     <div class="card-footer">
+        {% if available_products %}
         <form method="POST" action="{{ url_for('products.link_to_repo') }}" class="d-flex gap-2 align-items-end">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="repo_id" value="{{ repo.id }}">
@@ -73,6 +74,11 @@
                 <i class="bi bi-link me-1"></i>Link
             </button>
         </form>
+        {% else %}
+        <p class="text-muted small mb-0">
+            <i class="bi bi-info-circle me-1"></i>All active products are already linked to this repository.
+        </p>
+        {% endif %}
     </div>
     {% endif %}
 </div>
