@@ -163,6 +163,21 @@ class TestTemplateArchiveRoute:
 
 class TestArtifactRoutes:
 
+    def test_admin_can_view_add_artifact_form(self, admin_client, template):
+        """GET /templates/<id>/artifacts/new renders without error (regression for Jinja2 bug)."""
+        resp = admin_client.get(f'/templates/{template.id}/artifacts/new')
+        assert resp.status_code == 200
+        assert b'Add Artifact' in resp.data
+
+    def test_admin_can_view_edit_artifact_form(self, admin_client, template_with_artifact):
+        """GET /templates/<id>/artifacts/<aid>/edit renders without error (regression)."""
+        artifact = template_with_artifact.artifacts[0]
+        resp = admin_client.get(
+            f'/templates/{template_with_artifact.id}/artifacts/{artifact.id}/edit'
+        )
+        assert resp.status_code == 200
+        assert b'Edit Artifact' in resp.data
+
     # TC-006-022
     def test_viewer_cannot_add_artifact(self, auth_client, template):
         resp = auth_client.post(f'/templates/{template.id}/artifacts/new', data={
