@@ -56,6 +56,28 @@ class TestUserCreateRoute:
         assert resp.status_code == 200
         assert b'Passwords must match' in resp.data
 
+    # TC-004-030
+    def test_create_form_loads_empty_after_failed_submission(self, admin_client):
+        """Fresh GET to /users/new must not carry over data from a prior failed POST."""
+        admin_client.post('/users/new', data={
+            'email': 'shouldnotpersist@example.com',
+            'full_name': 'Ghost User',
+            'password': 'short',
+            'confirm_password': 'short',
+            'role': 'viewer',
+        })
+        resp = admin_client.get('/users/new')
+        assert resp.status_code == 200
+        assert b'shouldnotpersist@example.com' not in resp.data
+        assert b'Ghost User' not in resp.data
+
+    # TC-004-031
+    def test_create_form_has_autocomplete_off(self, admin_client):
+        """Create form must include autocomplete=off to prevent browser autofill."""
+        resp = admin_client.get('/users/new')
+        assert resp.status_code == 200
+        assert b'autocomplete="off"' in resp.data
+
 
 class TestUserEditRoute:
     """User edit route tests."""
