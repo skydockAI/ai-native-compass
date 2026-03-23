@@ -44,7 +44,7 @@ def detail(repo_id):
 
     artifact_values = repository_service.get_artifact_values_map(repo_id)
     shared_attr_values = repository_service.get_shared_attr_values_map(repo_id)
-    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False)
+    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False, custom_only=True)
     # Also include inactive custom attrs if repo has values for them
     return render_template(
         'repositories/detail.html',
@@ -104,7 +104,7 @@ def create():
     if selected_template_id:
         selected_template = template_service.get_template_by_id(selected_template_id)
 
-    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False)
+    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False, custom_only=True)
 
     return render_template(
         'repositories/create.html',
@@ -125,7 +125,7 @@ def artifact_fields():
     """Return HTMX partial with artifact input fields for a given template (REQ-050)."""
     template_id = request.args.get('template_id', type=int)
     template = template_service.get_template_by_id(template_id) if template_id else None
-    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False)
+    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False, custom_only=True)
     return render_template(
         'repositories/partials/artifact_fields.html',
         template=template,
@@ -187,7 +187,7 @@ def edit(repo_id):
 
     artifact_values_map = repository_service.get_artifact_values_map(repo_id)
     shared_attr_values_map = repository_service.get_shared_attr_values_map(repo_id)
-    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False)
+    custom_attrs = shared_attribute_service.get_attributes(include_inactive=False, custom_only=True)
 
     return render_template(
         'repositories/edit.html',
