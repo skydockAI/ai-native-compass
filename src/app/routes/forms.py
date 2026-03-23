@@ -1,7 +1,7 @@
 """WTForms form classes for route handlers."""
 
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms import BooleanField, HiddenField, IntegerField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length, Optional
 
 
@@ -84,3 +84,51 @@ class TeamEditForm(FlaskForm):
     description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
     version = HiddenField('version')
     submit = SubmitField('Save Changes')
+
+
+class TemplateCreateForm(FlaskForm):
+    """Form for creating a new repo template (Admin only)."""
+
+    name = StringField('Template name', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    submit = SubmitField('Create Template')
+
+
+class TemplateEditForm(FlaskForm):
+    """Form for editing an existing repo template (Admin only)."""
+
+    name = StringField('Template name', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    version = HiddenField('version')
+    submit = SubmitField('Save Changes')
+
+
+class ArtifactForm(FlaskForm):
+    """Form for adding/editing a template artifact (Admin only)."""
+
+    type = SelectField('Type', choices=[
+        ('document', 'Document'),
+        ('skill', 'Skill'),
+        ('agent', 'Agent'),
+        ('other', 'Other'),
+    ], validators=[DataRequired()])
+    name = StringField('Artifact name', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    value_type = SelectField('Value type', choices=[
+        ('', '— select —'),
+        ('text', 'Text'),
+        ('number', 'Number'),
+        ('boolean', 'Boolean (True/False/N/A)'),
+        ('list', 'List'),
+    ], validators=[Optional()])
+    is_required = BooleanField('Required')
+    display_order = IntegerField('Display order', default=0, validators=[Optional()])
+    submit = SubmitField('Save Artifact')
+
+
+class ListOptionForm(FlaskForm):
+    """Form for adding/editing a list option (Admin only)."""
+
+    value = StringField('Option value', validators=[DataRequired(), Length(max=255)])
+    display_order = IntegerField('Display order', default=0, validators=[Optional()])
+    submit = SubmitField('Save Option')

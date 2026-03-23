@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit Option' if is_edit else 'Add Option' }} - AI Native Compass{% endblock %}
+{% block nav_templates %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('templates.index') }}">Templates</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('templates.detail', template_id=template.id) }}">{{ template.name }}</a></li>
+                <li class="breadcrumb-item active">{{ 'Edit Option' if is_edit else 'Add Option' }}: {{ artifact.name }}</li>
+            </ol>
+        </nav>
+        <h1>
+            <i class="bi bi-{{ 'pencil' if is_edit else 'list-ul' }} me-2 text-primary"></i>
+            {{ 'Edit List Option' if is_edit else 'Add List Option' }}
+        </h1>
+        <p class="text-muted mb-0">Artifact: <strong>{{ artifact.name }}</strong></p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 col-xl-4">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.value.label(class="form-label") }}
+                        {{ form.value(class="form-control" + (" is-invalid" if form.value.errors else ""), placeholder="Option value") }}
+                        {% for error in form.value.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.display_order.label(class="form-label") }}
+                        {{ form.display_order(class="form-control" + (" is-invalid" if form.display_order.errors else ""), style="width:120px") }}
+                        {% for error in form.display_order.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('templates.detail', template_id=template.id) }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
