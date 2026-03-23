@@ -1,10 +1,12 @@
 """Product management business logic (REQ-023–026, REQ-053, REQ-054)."""
 
+from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
 from ..models.product import Product
 from ..models.repository import product_repository, Repository
+from . import audit_service
 
 
 class ProductServiceError(Exception):
@@ -49,6 +51,8 @@ def create_product(name, description=None):
         raise ProductServiceError(
             f'A product named "{name}" already exists.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('create', 'product', product.id, before=None, after=product.to_audit_dict(), user_id=actor_id)
     return product
 
 
@@ -74,6 +78,7 @@ def update_product(product_id, name, description=None, expected_version=None):
     name = _validate_name(name)
     _check_name_unique(name, exclude_id=product.id)
 
+    before = product.to_audit_dict()
     product.name = name
     product.description = description or None
     product.version += 1
@@ -85,6 +90,8 @@ def update_product(product_id, name, description=None, expected_version=None):
         raise ProductServiceError(
             f'A product named "{name}" already exists.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('update', 'product', product.id, before=before, after=product.to_audit_dict(), user_id=actor_id)
     return product
 
 
@@ -113,10 +120,13 @@ def archive_product(product_id):
             f'{names}. Please unlink or archive them first.'
         )
 
+    before = product.to_audit_dict()
     product.is_archived = True
     product.is_active = False
     product.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('archive', 'product', product.id, before=before, after=product.to_audit_dict(), user_id=actor_id)
     return product
 
 
@@ -128,10 +138,13 @@ def reactivate_product(product_id):
     if not product.is_archived:
         raise ProductServiceError('Product is not archived.')
 
+    before = product.to_audit_dict()
     product.is_archived = False
     product.is_active = True
     product.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('reactivate', 'product', product.id, before=before, after=product.to_audit_dict(), user_id=actor_id)
     return product
 
 

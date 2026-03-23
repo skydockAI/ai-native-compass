@@ -1,9 +1,11 @@
 """Team management business logic (REQ-019, REQ-020, REQ-022, REQ-049)."""
 
+from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
 from ..models.team import Team
+from . import audit_service
 
 
 class TeamServiceError(Exception):
@@ -50,6 +52,8 @@ def create_team(name, description=None):
         raise TeamServiceError(
             f'A team named "{name}" already exists. Please choose a different name.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('create', 'team', team.id, before=None, after=team.to_audit_dict(), user_id=actor_id)
     return team
 
 
@@ -82,6 +86,7 @@ def update_team(team_id, name, description, expected_version):
             f'A team named "{name}" already exists. Please choose a different name.'
         )
 
+    before = team.to_audit_dict()
     team.name = name
     team.description = description or None
     team.version += 1
@@ -92,6 +97,8 @@ def update_team(team_id, name, description, expected_version):
         raise TeamServiceError(
             f'A team named "{name}" already exists. Please choose a different name.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('update', 'team', team.id, before=before, after=team.to_audit_dict(), user_id=actor_id)
     return team
 
 
@@ -122,10 +129,13 @@ def archive_team(team_id):
             'Archive or reassign those repositories first.'
         )
 
+    before = team.to_audit_dict()
     team.is_archived = True
     team.is_active = False
     team.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('archive', 'team', team.id, before=before, after=team.to_audit_dict(), user_id=actor_id)
     return team
 
 
@@ -138,10 +148,13 @@ def reactivate_team(team_id):
     if not team.is_archived:
         raise TeamServiceError('Team is not archived.')
 
+    before = team.to_audit_dict()
     team.is_archived = False
     team.is_active = True
     team.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('reactivate', 'team', team.id, before=before, after=team.to_audit_dict(), user_id=actor_id)
     return team
 
 

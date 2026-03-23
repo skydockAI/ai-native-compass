@@ -3,6 +3,7 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from . import authenticate_user
 from .forms import LoginForm
+from ..services import audit_service
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -17,6 +18,7 @@ def login():
         user = authenticate_user(form.email.data, form.password.data)
         if user:
             login_user(user)
+            audit_service.log('login', 'session', user.id, user_id=user.id)
             next_page = request.args.get('next')
             return redirect(next_page or url_for('dashboard.index'))
         flash('Invalid email or password.', 'danger')
@@ -27,5 +29,6 @@ def login():
 @auth_bp.route('/logout')
 @login_required
 def logout():
+    audit_service.log('logout', 'session', current_user.id, user_id=current_user.id)
     logout_user()
     return redirect(url_for('auth.login'))

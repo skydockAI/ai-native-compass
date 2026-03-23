@@ -449,6 +449,61 @@ Linking and unlinking does not affect the repository's data, artifact values, or
 
 ---
 
+## Audit Log (Admin Only)
+
+The Audit Log records every significant action in the system — providing a permanent, tamper-proof history for compliance and troubleshooting.
+
+### Accessing the Audit Log
+
+The **Audit Log** link appears in the Administration section of the sidebar for Admin users only. It is hidden for Editor and Viewer users.
+
+### What Is Logged
+
+Every create, update, archive, reactivate, role change, and template change event is logged automatically when the action is performed. Session events (login, logout) are also recorded.
+
+| Event | Entity Types |
+|-------|-------------|
+| `login` / `logout` | session |
+| `create` | user, team, product, repository, template |
+| `update` | user, team, product, repository, template |
+| `archive` | user, team, product, repository, template |
+| `reactivate` | user, team, product, repository, template |
+| `role_change` | user |
+| `template_change` | template (artifact added, updated, or removed) |
+
+### Audit Log Columns
+
+| Column | Description |
+|--------|-------------|
+| Timestamp | Date and time (UTC) when the event occurred |
+| Actor | The user who performed the action (System for automated events) |
+| Entity Type | The type of entity affected |
+| Entity ID | The primary key of the affected entity |
+| Action | The type of event |
+| Before / After | Expandable view of the field-level change |
+
+### Filtering and Search
+
+Use the filter bar at the top of the page to narrow entries:
+
+- **Entity Type** — filter by user, team, product, repository, template, or session
+- **Action** — filter by a specific event type
+- **Actor** — filter to a specific user's actions
+- **From / To** — filter by date range (YYYY-MM-DD)
+- **Search** — full-text search across before/after values and entity fields
+
+Filters update the list immediately via HTMX without a full page reload.
+
+### Before / After Values
+
+Click the **chevron** button on any row to expand the before and after JSON values for that entry. These show the field-level state immediately before and after the change was applied.
+
+### Permanent Preservation
+
+Audit log entries are **never deleted**, archived, or modified. There is no purge or retention policy in v1.
+
+---
+
 ## Environment Variables
 
 | Variable | Description | Example |

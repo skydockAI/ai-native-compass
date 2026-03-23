@@ -60,5 +60,15 @@ class User(BaseModel, UserMixin):
     # Flask-Login reads ``user.is_active`` when ``login_user()`` is called;
     # the ``before_request`` hook additionally checks ``is_archived`` every request.
 
+    def to_audit_dict(self) -> dict:
+        """Return auditable fields as a plain dict for before/after capture."""
+        return {
+            'email': self.email,
+            'full_name': self.full_name,
+            'role': self.role.value if self.role else None,
+            'is_archived': self.is_archived,
+            'is_active': self.is_active,
+        }
+
     def __repr__(self) -> str:
         return f'<User {self.email}>'

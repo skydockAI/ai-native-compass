@@ -1,7 +1,10 @@
 """User management business logic (REQ-005, REQ-006, REQ-016, REQ-017, REQ-018)."""
 
+from flask_login import current_user
+
 from ..extensions import db
 from ..models.user import User, UserRole
+from . import audit_service
 
 
 class UserServiceError(Exception):
@@ -63,6 +66,8 @@ def create_user(email, full_name, password, role_value):
 
     db.session.add(user)
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('create', 'user', user.id, before=None, after=user.to_audit_dict(), user_id=actor_id)
     return user
 
 
@@ -108,11 +113,21 @@ def update_user(user_id, email, full_name, role_value, expected_version):
     except ValueError:
         raise UserServiceError(f'Invalid role: {role_value}')
 
+    before = user.to_audit_dict()
+    old_role = user.role
+
     user.email = email
     user.full_name = full_name
     user.role = role
     user.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    after = user.to_audit_dict()
+    audit_service.log('update', 'user', user.id, before=before, after=after, user_id=actor_id)
+    if old_role != role:
+        audit_service.log('role_change', 'user', user.id,
+                          before={'role': old_role.value}, after={'role': role.value},
+                          user_id=actor_id)
     return user
 
 
@@ -131,10 +146,13 @@ def archive_user(user_id):
     if user.is_archived:
         raise UserServiceError('User is already archived.')
 
+    before = user.to_audit_dict()
     user.is_archived = True
     user.is_active = False
     user.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('archive', 'user', user.id, before=before, after=user.to_audit_dict(), user_id=actor_id)
     return user
 
 
@@ -147,10 +165,13 @@ def reactivate_user(user_id):
     if not user.is_archived:
         raise UserServiceError('User is not archived.')
 
+    before = user.to_audit_dict()
     user.is_archived = False
     user.is_active = True
     user.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('reactivate', 'user', user.id, before=before, after=user.to_audit_dict(), user_id=actor_id)
     return user
 
 

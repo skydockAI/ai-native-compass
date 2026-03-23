@@ -72,6 +72,18 @@ class Repository(BaseModel):
         overlaps='attribute',
     )
 
+    def to_audit_dict(self) -> dict:
+        """Return auditable fields as a plain dict for before/after capture."""
+        return {
+            'name': self.name,
+            'url': self.url,
+            'description': self.description,
+            'team_id': self.team_id,
+            'template_id': self.template_id,
+            'is_archived': self.is_archived,
+            'is_active': self.is_active,
+        }
+
     def __repr__(self) -> str:
         return f'<Repository {self.name}>'
 
