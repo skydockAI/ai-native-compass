@@ -23,15 +23,16 @@ def test_navbar_contains_branding(auth_client):
     assert 'main-navbar' in html
 
 
-def test_sidebar_navigation_links_present(auth_client):
+def test_sidebar_navigation_links_present(admin_client):
     """TC-002-004: Sidebar contains all required navigation links."""
-    response = auth_client.get('/')
+    response = admin_client.get('/')
     html = response.data.decode('utf-8')
     assert 'Dashboard' in html
     assert 'Products' in html
     assert 'Repositories' in html
     assert 'Templates' in html
     assert 'Teams' in html
+    # Admin-only links visible to admin users
     assert 'Users' in html
     assert 'Audit Log' in html
 

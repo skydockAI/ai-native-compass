@@ -7,9 +7,9 @@ def test_dashboard_returns_200(auth_client):
     assert response.status_code == 200
 
 
-def test_dashboard_renders_html(auth_client):
+def test_dashboard_renders_html(admin_client):
     """TC-001-008: Base template renders with expected elements."""
-    response = auth_client.get('/')
+    response = admin_client.get('/')
     html = response.data.decode('utf-8')
 
     # Bootstrap 5 CSS is loaded
@@ -24,6 +24,7 @@ def test_dashboard_renders_html(auth_client):
     assert 'Repositories' in html
     assert 'Templates' in html
     assert 'Teams' in html
+    # Admin-only links visible to admin
     assert 'Users' in html
     assert 'Audit Log' in html
 
