@@ -1,8 +1,8 @@
 """WTForms form classes for route handlers."""
 
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, PasswordField, SelectField, StringField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms import HiddenField, PasswordField, SelectField, StringField, SubmitField, TextAreaField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, Optional
 
 
 class UserCreateForm(FlaskForm):
@@ -67,3 +67,20 @@ class AdminResetPasswordForm(FlaskForm):
         EqualTo('new_password', message='Passwords must match.'),
     ])
     submit = SubmitField('Reset Password')
+
+
+class TeamCreateForm(FlaskForm):
+    """Form for creating a new team (Admin/Editor)."""
+
+    name = StringField('Team name', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    submit = SubmitField('Create Team')
+
+
+class TeamEditForm(FlaskForm):
+    """Form for editing an existing team (Admin/Editor)."""
+
+    name = StringField('Team name', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    version = HiddenField('version')
+    submit = SubmitField('Save Changes')

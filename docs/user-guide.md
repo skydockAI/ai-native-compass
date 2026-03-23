@@ -150,6 +150,40 @@ Switch to the archived users view, then click the **reactivate icon** next to th
 
 Click the **key icon** next to a user. Enter the new password (minimum 8 characters) and click **Reset Password**. The user can immediately log in with the new password.
 
+## Team Management (Admin and Editor)
+
+Teams are used to categorise code repositories. Each repository belongs to exactly one team.
+
+### Viewing Teams
+
+Navigate to **Teams** in the sidebar. The list defaults to showing **active** teams. Click **Show Archived** to see archived teams.
+
+All authenticated users (Admin, Editor, Viewer) can view the team list.
+
+### Creating a Team
+
+1. Click **New Team** on the team list page (requires Admin or Editor role).
+2. Enter a **team name** (required, must be unique) and an optional **description**.
+3. Click **Create Team**.
+
+Team names must be unique across the system. Attempting to create a team with a name already in use shows a clear error message.
+
+### Editing a Team
+
+Click the **pencil icon** next to a team in the list (Admin or Editor only). Update the name or description and click **Save Changes**.
+
+### Archiving a Team
+
+Click the **archive icon** next to a team and confirm (Admin or Editor only).
+
+A team **cannot** be archived while it has active repositories assigned to it. The error message will list the blocking repositories. Archive or reassign those repositories first, then archive the team.
+
+### Reactivating a Team
+
+Switch to the archived teams view and click the **reactivate icon** next to a team (Admin or Editor only).
+
+---
+
 ## Environment Variables
 
 | Variable | Description | Example |

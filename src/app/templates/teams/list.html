@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Teams - AI Native Compass{% endblock %}
+{% block nav_teams %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-people me-2 text-primary"></i>Teams</h1>
+    <div class="d-flex gap-2 align-items-center">
+        {% if show_archived %}
+            <a href="{{ url_for('teams.index') }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-eye me-1"></i>Show Active
+            </a>
+        {% else %}
+            <a href="{{ url_for('teams.index', archived='1') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-archive me-1"></i>Show Archived
+            </a>
+        {% endif %}
+        {% if current_user.role.value in ('admin', 'editor') %}
+        <a href="{{ url_for('teams.create') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>New Team
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    {% if teams %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                <tr{% if team.is_archived %} class="text-muted"{% endif %}>
+                    <td><strong>{{ team.name }}</strong></td>
+                    <td>{{ team.description or '—' }}</td>
+                    <td>
+                        {% if team.is_archived %}
+                            <span class="badge bg-warning text-dark">Archived</span>
+                        {% elif team.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        {% if current_user.role.value in ('admin', 'editor') %}
+                        <div class="btn-group btn-group-sm">
+                            {% if not team.is_archived %}
+                                <a href="{{ url_for('teams.edit', team_id=team.id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" title="Archive"
+                                        onclick="showConfirmModal('Archive Team', 'Are you sure you want to archive the team &quot;{{ team.name }}&quot;?', '{{ url_for('teams.archive', team_id=team.id) }}')">
+                                    <i class="bi bi-archive"></i>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-success" title="Reactivate"
+                                        onclick="showConfirmModal('Reactivate Team', 'Are you sure you want to reactivate the team &quot;{{ team.name }}&quot;?', '{{ url_for('teams.reactivate', team_id=team.id) }}')">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body empty-state">
+        <i class="bi bi-people"></i>
+        <p class="mb-0">
+            {% if show_archived %}
+                No archived teams found.
+            {% else %}
+                No teams found. Create the first team to get started.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showConfirmModal(title, message, actionUrl) {
+    document.getElementById('confirmModalLabel').textContent = title;
+    document.getElementById('confirmModalBody').innerHTML = message;
+    document.getElementById('confirmModalForm').action = actionUrl;
+    var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

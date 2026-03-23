@@ -44,6 +44,9 @@ def create_app(config_name=None):
     from .routes.users import users_bp
     app.register_blueprint(users_bp)
 
+    from .routes.teams import teams_bp
+    app.register_blueprint(teams_bp)
+
     # Before-request: enforce active/archived check on every authenticated
     # request so that deactivated users lose access immediately (REQ-007).
     @app.before_request
