@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}{{ repo.name }} - Repositories - AI Native Compass{% endblock %}
+{% block nav_repositories %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('repositories.index') }}">Repositories</a></li>
+                <li class="breadcrumb-item active">{{ repo.name }}</li>
+            </ol>
+        </nav>
+        <h1>
+            <i class="bi bi-code-square me-2 text-primary"></i>{{ repo.name }}
+            {% if repo.is_archived %}
+                <span class="badge bg-warning text-dark fs-6 align-middle">Archived</span>
+            {% endif %}
+        </h1>
+    </div>
+    {% if current_user.role.value in ('admin', 'editor') and not repo.is_archived %}
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('repositories.edit', repo_id=repo.id) }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-pencil me-1"></i>Edit
+        </a>
+        <button type="button" class="btn btn-outline-danger btn-sm"
+                onclick="showConfirmModal('Archive Repository', 'Are you sure you want to archive &quot;{{ repo.name }}&quot;?', '{{ url_for('repositories.archive', repo_id=repo.id) }}')">
+            <i class="bi bi-archive me-1"></i>Archive
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+{# Shared / default attributes #}
+<div class="card mb-4">
+    <div class="card-header"><strong>Repository Details</strong></div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">URL</dt>
+            <dd class="col-sm-9">
+                <a href="{{ repo.url }}" target="_blank" rel="noopener noreferrer">{{ repo.url }}</a>
+            </dd>
+
+            <dt class="col-sm-3">Team</dt>
+            <dd class="col-sm-9">{{ repo.team.name if repo.team else '—' }}</dd>
+
+            <dt class="col-sm-3">Template</dt>
+            <dd class="col-sm-9">{{ repo.template.name if repo.template else '—' }}</dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">{{ repo.description or '—' }}</dd>
+
+            {% for attr in custom_attrs %}
+            {% set sav = shared_attr_values.get(attr.id) %}
+            <dt class="col-sm-3">{{ attr.name }}</dt>
+            <dd class="col-sm-9">{{ sav.value if sav and sav.value else '—' }}</dd>
+            {% endfor %}
+        </dl>
+    </div>
+</div>
+
+{# Template artifact values #}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Artifact Values</strong>
+        <span class="badge bg-secondary">{{ repo.template.name if repo.template else '' }}</span>
+    </div>
+
+    {% set active_artifacts = repo.template.artifacts | selectattr('is_active') | list %}
+    {% if active_artifacts %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Artifact</th>
+                    <th>Type</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for artifact in active_artifacts %}
+                {% set av = artifact_values.get(artifact.id) %}
+                <tr>
+                    <td>
+                        <strong>{{ artifact.name }}</strong>
+                        {% if artifact.type.value == 'other' and artifact.is_required %}
+                            <span class="badge bg-danger ms-1">Required</span>
+                        {% endif %}
+                        {% if artifact.description %}
+                        <div class="text-muted small">{{ artifact.description }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if artifact.type.value == 'document' %}
+                            <span class="badge bg-info text-dark">Document</span>
+                        {% elif artifact.type.value == 'skill' %}
+                            <span class="badge bg-primary">Skill</span>
+                        {% elif artifact.type.value == 'agent' %}
+                            <span class="badge bg-success">Agent</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Other</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if av %}
+                            {% if artifact.type.value in ('document', 'skill', 'agent') %}
+                                {% if av.value_text == 'Yes' %}
+                                    <span class="badge bg-success">Yes</span>
+                                {% elif av.value_text == 'No' %}
+                                    <span class="badge bg-danger">No</span>
+                                {% elif av.value_text == 'N/A' %}
+                                    <span class="badge bg-secondary">N/A</span>
+                                {% else %}
+                                    <span class="text-muted">—</span>
+                                {% endif %}
+                            {% elif artifact.type.value == 'other' %}
+                                {% if artifact.value_type.value == 'text' %}
+                                    {{ av.value_text or '—' }}
+                                {% elif artifact.value_type.value == 'number' %}
+                                    {{ av.value_number if av.value_number is not none else '—' }}
+                                {% elif artifact.value_type.value == 'boolean' %}
+                                    {% if av.value_boolean is none %}
+                                        <span class="text-muted">N/A</span>
+                                    {% elif av.value_boolean %}
+                                        <span class="badge bg-success">True</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">False</span>
+                                    {% endif %}
+                                {% elif artifact.value_type.value == 'list' %}
+                                    {{ av.list_option.value if av.list_option else '—' }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body empty-state">
+        <i class="bi bi-list-task"></i>
+        <p class="mb-0">No active artifacts defined for this template.</p>
+    </div>
+    {% endif %}
+</div>
+
+<div class="d-flex gap-2">
+    <a href="{{ url_for('repositories.index') }}" class="btn btn-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back to Repositories
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showConfirmModal(title, message, actionUrl) {
+    document.getElementById('confirmModalLabel').textContent = title;
+    document.getElementById('confirmModalBody').innerHTML = message;
+    document.getElementById('confirmModalForm').action = actionUrl;
+    var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

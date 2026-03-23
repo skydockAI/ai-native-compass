@@ -312,14 +312,11 @@ def _get_blocking_repositories(template):
 
 
 def _is_list_option_in_use(option):
-    """Return True if the option is referenced by any repository artifact value.
-
-    Until DI-007 all options are considered unused.
-    """
+    """Return True if the option is referenced by any repository artifact value."""
     try:
-        from ..models.repository import RepositoryArtifactValue  # noqa: F401
+        from ..models.repository import RepositoryArtifactValue
         return RepositoryArtifactValue.query.filter_by(
-            list_option_id=option.id
+            value_list_option_id=option.id
         ).first() is not None
     except ImportError:
         return False

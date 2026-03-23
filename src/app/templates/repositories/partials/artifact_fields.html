@@ -1,0 +1,132 @@
+{#
+  HTMX partial: artifact input fields for the selected template.
+  Rendered by GET /repositories/artifact-fields?template_id=X
+  and also inline-included by the create/edit templates on form re-render.
+
+  Context variables:
+    template          — RepoTemplate or None
+    custom_attrs      — list of active SharedAttributeDefinition (custom only)
+    artifact_values   — dict: template_artifact_id → RepositoryArtifactValue (may be empty)
+    shared_attr_values — dict: attribute_id → RepositorySharedAttributeValue (may be empty)
+#}
+
+{% if template %}
+
+{# Custom shared attributes #}
+{% if custom_attrs %}
+<hr class="my-3">
+<h6 class="text-muted mb-3"><i class="bi bi-tags me-1"></i>Shared Attributes</h6>
+{% for attr in custom_attrs %}
+{% set sav = shared_attr_values.get(attr.id) %}
+<div class="mb-3">
+    <label class="form-label" for="shared_attr_{{ attr.id }}">{{ attr.name }}</label>
+    <input type="text"
+           class="form-control"
+           id="shared_attr_{{ attr.id }}"
+           name="shared_attr_{{ attr.id }}"
+           value="{{ sav.value if sav and sav.value else '' }}">
+</div>
+{% endfor %}
+{% endif %}
+
+{# Template artifacts #}
+{% set active_artifacts = template.artifacts | selectattr('is_active') | list %}
+{% if active_artifacts %}
+<hr class="my-3">
+<h6 class="text-muted mb-3"><i class="bi bi-list-task me-1"></i>Artifacts — {{ template.name }}</h6>
+{% for artifact in active_artifacts %}
+{% set av = artifact_values.get(artifact.id) %}
+<div class="mb-3">
+    <label class="form-label" for="artifact_{{ artifact.id }}">
+        {{ artifact.name }}
+        {% if artifact.type.value == 'other' and artifact.is_required %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        {# Type badge #}
+        {% if artifact.type.value == 'document' %}
+            <span class="badge bg-info text-dark ms-1">Document</span>
+        {% elif artifact.type.value == 'skill' %}
+            <span class="badge bg-primary ms-1">Skill</span>
+        {% elif artifact.type.value == 'agent' %}
+            <span class="badge bg-success ms-1">Agent</span>
+        {% else %}
+            <span class="badge bg-secondary ms-1">Other</span>
+        {% endif %}
+    </label>
+    {% if artifact.description %}
+    <div class="text-muted small mb-1">{{ artifact.description }}</div>
+    {% endif %}
+
+    {# Yes/No/N/A for Document, Skill, Agent #}
+    {% if artifact.type.value in ('document', 'skill', 'agent') %}
+    {% set current_val = av.value_text if av else '' %}
+    <select class="form-select" id="artifact_{{ artifact.id }}" name="artifact_{{ artifact.id }}">
+        <option value="" {% if not current_val %}selected{% endif %}>— select —</option>
+        <option value="Yes" {% if current_val == 'Yes' %}selected{% endif %}>Yes</option>
+        <option value="No" {% if current_val == 'No' %}selected{% endif %}>No</option>
+        <option value="N/A" {% if current_val == 'N/A' %}selected{% endif %}>N/A</option>
+    </select>
+
+    {# Other:text #}
+    {% elif artifact.type.value == 'other' and artifact.value_type.value == 'text' %}
+    <input type="text"
+           class="form-control"
+           id="artifact_{{ artifact.id }}"
+           name="artifact_{{ artifact.id }}"
+           value="{{ av.value_text if av and av.value_text else '' }}"
+           {% if artifact.is_required %}required{% endif %}>
+
+    {# Other:number #}
+    {% elif artifact.type.value == 'other' and artifact.value_type.value == 'number' %}
+    <input type="number"
+           step="any"
+           class="form-control"
+           id="artifact_{{ artifact.id }}"
+           name="artifact_{{ artifact.id }}"
+           value="{{ av.value_number if av and av.value_number is not none else '' }}"
+           {% if artifact.is_required %}required{% endif %}>
+
+    {# Other:boolean — tri-state select #}
+    {% elif artifact.type.value == 'other' and artifact.value_type.value == 'boolean' %}
+    {% set bval = '' %}
+    {% if av and av.value_boolean is not none %}
+        {% if av.value_boolean %}{% set bval = 'true' %}{% else %}{% set bval = 'false' %}{% endif %}
+    {% endif %}
+    <select class="form-select" id="artifact_{{ artifact.id }}" name="artifact_{{ artifact.id }}">
+        <option value="" {% if not bval %}selected{% endif %}>N/A</option>
+        <option value="true" {% if bval == 'true' %}selected{% endif %}>True</option>
+        <option value="false" {% if bval == 'false' %}selected{% endif %}>False</option>
+    </select>
+
+    {# Other:list #}
+    {% elif artifact.type.value == 'other' and artifact.value_type.value == 'list' %}
+    {% set active_opts = artifact.list_options | selectattr('is_active') | list %}
+    <select class="form-select" id="artifact_{{ artifact.id }}" name="artifact_{{ artifact.id }}"
+            {% if artifact.is_required %}required{% endif %}>
+        <option value="">— select —</option>
+        {% for opt in active_opts %}
+        <option value="{{ opt.id }}" {% if av and av.value_list_option_id == opt.id %}selected{% endif %}>
+            {{ opt.value }}
+        </option>
+        {% endfor %}
+    </select>
+
+    {% else %}
+    <input type="text" class="form-control" name="artifact_{{ artifact.id }}" value="">
+    {% endif %}
+</div>
+{% endfor %}
+
+{% else %}
+<div class="alert alert-info mt-3">
+    <i class="bi bi-info-circle me-1"></i>
+    This template has no active artifacts.
+</div>
+{% endif %}
+
+{% else %}
+{# No template selected yet — placeholder shown before HTMX swap #}
+<div class="text-muted mt-3">
+    <i class="bi bi-arrow-up-circle me-1"></i>Select a template above to load artifact fields.
+</div>
+{% endif %}

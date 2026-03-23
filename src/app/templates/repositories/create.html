@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}New Repository - AI Native Compass{% endblock %}
+{% block nav_repositories %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>
+        <i class="bi bi-plus-square me-2 text-primary"></i>New Repository
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-lg-9 col-xl-7">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate id="repo-create-form">
+                    {{ form.hidden_tag() }}
+
+                    {# Step 1: Template selection (HTMX-driven) #}
+                    <div class="mb-4">
+                        <div class="mb-3">
+                            {{ form.template_id.label(class="form-label fw-semibold") }}
+                            <span class="text-danger ms-1">*</span>
+                            {{ form.template_id(
+                                class="form-select" + (" is-invalid" if form.template_id.errors else ""),
+                                hx_get=url_for('repositories.artifact_fields'),
+                                hx_target="#dynamic-fields",
+                                hx_trigger="change",
+                                hx_include="[name='template_id']",
+                                id="template-selector"
+                            ) }}
+                            {% for error in form.template_id.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Select a template first. Artifact fields will load automatically.
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Step 2: Default shared fields #}
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Repository name") }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.url.label(class="form-label") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.url(class="form-control" + (" is-invalid" if form.url.errors else ""), placeholder="https://github.com/org/repo") }}
+                        {% for error in form.url.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        <span class="text-muted small ms-1">(optional)</span>
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=3, placeholder="Describe this repository") }}
+                        {% for error in form.description.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.team_id.label(class="form-label") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.team_id(class="form-select" + (" is-invalid" if form.team_id.errors else "")) }}
+                        {% for error in form.team_id.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    {# Step 3: Dynamic artifact + shared-attribute fields (HTMX target) #}
+                    <div id="dynamic-fields">
+                        {% if selected_template %}
+                            {# Re-render existing values after form POST failure #}
+                            {% include 'repositories/partials/artifact_fields.html' %}
+                        {% else %}
+                            <div class="text-muted">
+                                <i class="bi bi-arrow-up-circle me-1"></i>Select a template above to load artifact fields.
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('repositories.index') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
