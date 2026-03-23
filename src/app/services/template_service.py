@@ -1,9 +1,11 @@
 """Template management business logic (REQ-031, REQ-032, REQ-033, REQ-037–041, REQ-049)."""
 
+from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
 from ..models.template import ArtifactListOption, ArtifactType, ArtifactValueType, RepoTemplate, TemplateArtifact
+from . import audit_service
 
 
 class TemplateServiceError(Exception):
@@ -54,6 +56,8 @@ def create_template(name, description=None):
         raise TemplateServiceError(
             f'A template named "{name}" already exists. Please choose a different name.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('create', 'template', template.id, before=None, after=template.to_audit_dict(), user_id=actor_id)
     return template
 
 
@@ -85,6 +89,7 @@ def update_template(template_id, name, description, expected_version):
             f'A template named "{name}" already exists. Please choose a different name.'
         )
 
+    before = template.to_audit_dict()
     template.name = name
     template.description = description or None
     template.version += 1
@@ -95,6 +100,8 @@ def update_template(template_id, name, description, expected_version):
         raise TemplateServiceError(
             f'A template named "{name}" already exists. Please choose a different name.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('update', 'template', template.id, before=before, after=template.to_audit_dict(), user_id=actor_id)
     return template
 
 
@@ -120,10 +127,13 @@ def archive_template(template_id):
             'Archive or reassign those repositories first.'
         )
 
+    before = template.to_audit_dict()
     template.is_archived = True
     template.is_active = False
     template.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('archive', 'template', template.id, before=before, after=template.to_audit_dict(), user_id=actor_id)
     return template
 
 
@@ -136,10 +146,13 @@ def reactivate_template(template_id):
     if not template.is_archived:
         raise TemplateServiceError('Template is not archived.')
 
+    before = template.to_audit_dict()
     template.is_archived = False
     template.is_active = True
     template.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('reactivate', 'template', template.id, before=before, after=template.to_audit_dict(), user_id=actor_id)
     return template
 
 
@@ -202,6 +215,11 @@ def add_artifact(template_id, artifact_type, name, description=None,
         pass  # Repository model not yet available (pre-DI-007 env)
 
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('template_change', 'template', template_id,
+                      before=None,
+                      after={'artifact_action': 'add', 'artifact_name': artifact.name},
+                      user_id=actor_id)
     return artifact
 
 
@@ -215,6 +233,7 @@ def update_artifact(artifact_id, name, description=None, is_required=False, disp
     if not name:
         raise TemplateServiceError('Artifact name is required.')
 
+    before_name = artifact.name
     artifact.name = name
     artifact.description = description or None
     # is_required only meaningful for Other type
@@ -223,6 +242,11 @@ def update_artifact(artifact_id, name, description=None, is_required=False, disp
     artifact.display_order = int(display_order)
     artifact.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('template_change', 'template', artifact.template_id,
+                      before={'artifact_name': before_name},
+                      after={'artifact_action': 'update', 'artifact_name': artifact.name},
+                      user_id=actor_id)
     return artifact
 
 
@@ -235,9 +259,16 @@ def remove_artifact(artifact_id):
     artifact = db.session.get(TemplateArtifact, artifact_id)
     if artifact is None:
         raise TemplateServiceError('Artifact not found.')
+    template_id = artifact.template_id
+    artifact_name = artifact.name
     artifact.is_active = False
     artifact.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('template_change', 'template', template_id,
+                      before={'artifact_name': artifact_name},
+                      after={'artifact_action': 'remove', 'artifact_name': artifact_name},
+                      user_id=actor_id)
 
 
 # ---------------------------------------------------------------------------

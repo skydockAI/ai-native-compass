@@ -59,6 +59,9 @@ def create_app(config_name=None):
     from .routes.products import products_bp
     app.register_blueprint(products_bp)
 
+    from .routes.audit import audit_bp
+    app.register_blueprint(audit_bp)
+
     # Before-request: enforce active/archived check on every authenticated
     # request so that deactivated users lose access immediately (REQ-007).
     @app.before_request

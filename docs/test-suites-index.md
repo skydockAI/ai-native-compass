@@ -18,3 +18,4 @@ This document indexes all test suites for the AI Native Compass (ANC) project.
 | [TS-008](test-suites/TS-008.md) | Template Change Propagation & Repository Duplication | DI-008 | REQ-042, REQ-043, REQ-044, REQ-045, REQ-052 |
 | [TS-009](test-suites/TS-009.md) | Product Management & Repository Linking | DI-009 | REQ-023, REQ-024, REQ-025, REQ-026, REQ-049, REQ-053, REQ-054 |
 | [TS-010](test-suites/TS-010.md) | Dashboard, Filtering & UI Polish | DI-010 | REQ-055, REQ-056, REQ-057, REQ-058, REQ-067 |
+| [TS-011](test-suites/TS-011.md) | Audit Logging | DI-011 | REQ-048, REQ-059, REQ-060, REQ-061, REQ-062 |

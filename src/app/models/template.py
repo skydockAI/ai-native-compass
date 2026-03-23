@@ -40,6 +40,15 @@ class RepoTemplate(BaseModel):
         lazy='select',
     )
 
+    def to_audit_dict(self) -> dict:
+        """Return auditable fields as a plain dict for before/after capture."""
+        return {
+            'name': self.name,
+            'description': self.description,
+            'is_archived': self.is_archived,
+            'is_active': self.is_active,
+        }
+
     def __repr__(self) -> str:
         return f'<RepoTemplate {self.name}>'
 

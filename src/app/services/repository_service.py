@@ -1,11 +1,13 @@
 """Repository management business logic (REQ-021, REQ-027–030, REQ-050, REQ-051)."""
 
+from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
 from ..models.repository import Repository, RepositoryArtifactValue, product_repository
 from ..models.shared_attribute import RepositorySharedAttributeValue
 from ..models.template import ArtifactType, ArtifactValueType
+from . import audit_service
 
 
 class RepositoryServiceError(Exception):
@@ -134,6 +136,8 @@ def create_repository(name, url, team_id, template_id, description=None,
         raise RepositoryServiceError(
             f'A repository with URL "{url}" already exists.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('create', 'repository', repo.id, before=None, after=repo.to_audit_dict(), user_id=actor_id)
     return repo
 
 
@@ -173,6 +177,7 @@ def update_repository(repo_id, name, url, team_id, description=None,
     active_artifacts = [a for a in template.artifacts if a.is_active]
     _validate_required_artifacts(active_artifacts, artifact_values)
 
+    before = repo.to_audit_dict()
     repo.name = name
     repo.url = url
     repo.description = description or None
@@ -218,6 +223,8 @@ def update_repository(repo_id, name, url, team_id, description=None,
         raise RepositoryServiceError(
             f'A repository with URL "{url}" already exists.'
         )
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('update', 'repository', repo.id, before=before, after=repo.to_audit_dict(), user_id=actor_id)
     return repo
 
 
@@ -313,10 +320,13 @@ def archive_repository(repo_id):
             f'{names}. Please unlink or archive them first.'
         )
 
+    before = repo.to_audit_dict()
     repo.is_archived = True
     repo.is_active = False
     repo.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('archive', 'repository', repo.id, before=before, after=repo.to_audit_dict(), user_id=actor_id)
     return repo
 
 
@@ -328,10 +338,13 @@ def reactivate_repository(repo_id):
     if not repo.is_archived:
         raise RepositoryServiceError('Repository is not archived.')
 
+    before = repo.to_audit_dict()
     repo.is_archived = False
     repo.is_active = True
     repo.version += 1
     db.session.commit()
+    actor_id = current_user.id if current_user.is_authenticated else None
+    audit_service.log('reactivate', 'repository', repo.id, before=before, after=repo.to_audit_dict(), user_id=actor_id)
     return repo
 
 
