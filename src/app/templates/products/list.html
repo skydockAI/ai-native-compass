@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Products - AI Native Compass{% endblock %}
+{% block nav_products %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1><i class="bi bi-box-seam me-2 text-primary"></i>Products</h1>
+    <div class="d-flex gap-2 align-items-center">
+        {% if show_archived %}
+            <a href="{{ url_for('products.index') }}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-eye me-1"></i>Show Active
+            </a>
+        {% else %}
+            <a href="{{ url_for('products.index', archived='1') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-archive me-1"></i>Show Archived
+            </a>
+        {% endif %}
+        {% if current_user.role.value in ('admin', 'editor') %}
+        <a href="{{ url_for('products.create') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>New Product
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    {% if products %}
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr{% if product.is_archived %} class="text-muted"{% endif %}>
+                    <td>
+                        <a href="{{ url_for('products.detail', product_id=product.id) }}" class="fw-semibold text-decoration-none">
+                            {{ product.name }}
+                        </a>
+                    </td>
+                    <td class="text-truncate" style="max-width:300px;" title="{{ product.description or '' }}">
+                        {{ product.description or '—' }}
+                    </td>
+                    <td>
+                        {% if product.is_archived %}
+                            <span class="badge bg-warning text-dark">Archived</span>
+                        {% elif product.is_active %}
+                            <span class="badge bg-success">Active</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('products.detail', product_id=product.id) }}" class="btn btn-outline-secondary" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if current_user.role.value in ('admin', 'editor') %}
+                            {% if not product.is_archived %}
+                                <a href="{{ url_for('products.edit', product_id=product.id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" title="Archive"
+                                        onclick="showConfirmModal('Archive Product', 'Are you sure you want to archive &quot;{{ product.name }}&quot;?', '{{ url_for('products.archive', product_id=product.id) }}')">
+                                    <i class="bi bi-archive"></i>
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-success" title="Reactivate"
+                                        onclick="showConfirmModal('Reactivate Product', 'Are you sure you want to reactivate &quot;{{ product.name }}&quot;?', '{{ url_for('products.reactivate', product_id=product.id) }}')">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="card-body empty-state">
+        <i class="bi bi-box-seam"></i>
+        <p class="mb-0">
+            {% if show_archived %}
+                No archived products found.
+            {% else %}
+                No products found.
+                {% if current_user.role.value in ('admin', 'editor') %}
+                <a href="{{ url_for('products.create') }}">Create the first product.</a>
+                {% endif %}
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showConfirmModal(title, message, actionUrl) {
+    document.getElementById('confirmModalLabel').textContent = title;
+    document.getElementById('confirmModalBody').innerHTML = message;
+    document.getElementById('confirmModalForm').action = actionUrl;
+    var modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    modal.show();
+}
+</script>
+{% endblock %}

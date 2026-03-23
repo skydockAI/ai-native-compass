@@ -4,7 +4,7 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required
 
 from ..authz import role_required
-from ..services import repository_service, shared_attribute_service, team_service, template_service
+from ..services import product_service, repository_service, shared_attribute_service, team_service, template_service
 from ..services.repository_service import RepositoryServiceError
 from .forms import RepositoryCreateForm, RepositoryDuplicateForm, RepositoryEditForm
 
@@ -189,6 +189,11 @@ def edit(repo_id):
     shared_attr_values_map = repository_service.get_shared_attr_values_map(repo_id)
     custom_attrs = shared_attribute_service.get_attributes(include_inactive=False, custom_only=True)
 
+    linked_products = repo.products
+    linked_product_ids = {p.id for p in linked_products}
+    all_active_products = product_service.get_products(include_archived=False)
+    available_products = [p for p in all_active_products if p.id not in linked_product_ids]
+
     return render_template(
         'repositories/edit.html',
         form=form,
@@ -197,6 +202,8 @@ def edit(repo_id):
         artifact_values=artifact_values_map,
         shared_attr_values=shared_attr_values_map,
         custom_attrs=custom_attrs,
+        linked_products=linked_products,
+        available_products=available_products,
     )
 
 

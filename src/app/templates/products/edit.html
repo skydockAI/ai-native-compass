@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ product.name }} - Products - AI Native Compass{% endblock %}
+{% block nav_products %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{{ url_for('products.index') }}">Products</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('products.detail', product_id=product.id) }}">{{ product.name }}</a></li>
+                <li class="breadcrumb-item active">Edit</li>
+            </ol>
+        </nav>
+        <h1><i class="bi bi-pencil me-2 text-primary"></i>Edit Product</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-7 col-xl-5">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        <span class="text-danger ms-1">*</span>
+                        {{ form.name(class="form-control" + (" is-invalid" if form.name.errors else ""), placeholder="Product name") }}
+                        {% for error in form.name.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label") }}
+                        <span class="text-muted small ms-1">(optional)</span>
+                        {{ form.description(class="form-control" + (" is-invalid" if form.description.errors else ""), rows=4) }}
+                        {% for error in form.description.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex gap-2">
+                        {{ form.submit(class="btn btn-primary") }}
+                        <a href="{{ url_for('products.detail', product_id=product.id) }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

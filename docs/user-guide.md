@@ -340,6 +340,8 @@ On the edit form:
 
 Click the **archive icon** next to a repository and confirm (Admin or Editor only). Archived repositories are hidden from the default list but their data is preserved.
 
+A repository **cannot** be archived while it is linked to any active Products. The error message will list the blocking products. Unlink or archive those products first, then archive the repository.
+
 ### Reactivating a Repository
 
 Switch to the archived repositories view and click the **reactivate icon** next to a repository (Admin or Editor only).
@@ -356,6 +358,60 @@ On the duplicate form:
 - **Product links are not copied** — the duplicate starts with no product associations.
 
 After saving, you are redirected to the new repository's detail page.
+
+### Managing Product Links (Repository Edit Page)
+
+The repository edit page includes a **Linked Products** section at the bottom (Admin or Editor only):
+
+- **Linking a product**: Select a product from the dropdown and click **Link**. Only active (non-archived) products are available.
+- **Unlinking a product**: Click the **Unlink** button next to a linked product.
+
+Linking and unlinking does not affect the repository's data, artifact values, or audit history.
+
+---
+
+## Product Management (Admin and Editor)
+
+Products are business-level entities that group one or more code repositories under a product umbrella.
+
+### Viewing Products
+
+Navigate to **Products** in the sidebar. The list defaults to showing **active** products. Click **Show Archived** to see archived products alongside active ones.
+
+All authenticated users (Admin, Editor, Viewer) can view the product list and product detail pages.
+
+### Creating a Product
+
+1. Click **New Product** on the product list page (Admin or Editor only).
+2. Enter a **product name** (required, must be unique) and an optional **description**.
+3. Click **Create Product**.
+
+Product names must be unique across the system (case-insensitive).
+
+### Editing a Product
+
+Click the **pencil icon** next to a product in the list, or the **Edit** button on the product detail page (Admin or Editor only). Update the name or description and click **Save Changes**.
+
+### Archiving a Product
+
+Click the **archive icon** next to a product and confirm (Admin or Editor only).
+
+A product **cannot** be archived while it is linked to any active Repositories. The error message will list the blocking repositories. Unlink or archive those repositories first, then archive the product.
+
+### Reactivating a Product
+
+Switch to the archived products view and click the **reactivate icon** next to a product (Admin or Editor only).
+
+### Linking Repositories to a Product
+
+The product detail page shows the linked repositories and a **Link** section at the bottom (for Admin and Editor users on active products):
+
+- **Linking a repository**: Select a repository from the dropdown and click **Link**. Only active repositories not already linked to this product are available.
+- **Unlinking a repository**: Click the **Unlink** button next to a linked repository.
+
+Products and Repositories can also be created independently and linked at any time — linking is not required at creation.
+
+Linking and unlinking does not affect the repository's data, artifact values, or audit history.
 
 ---
 

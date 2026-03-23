@@ -172,6 +172,23 @@ class RepositoryDuplicateForm(FlaskForm):
     submit = SubmitField('Duplicate Repository')
 
 
+class ProductCreateForm(FlaskForm):
+    """Form for creating a new product (Admin/Editor)."""
+
+    name = StringField('Product name', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    submit = SubmitField('Create Product')
+
+
+class ProductEditForm(FlaskForm):
+    """Form for editing an existing product (Admin/Editor)."""
+
+    name = StringField('Product name', validators=[DataRequired(), Length(max=255)])
+    description = TextAreaField('Description', validators=[Optional(), Length(max=2000)])
+    version = HiddenField('version')
+    submit = SubmitField('Save Changes')
+
+
 class SharedAttributeCreateForm(FlaskForm):
     """Form for creating a new custom shared attribute (Admin only)."""
 
